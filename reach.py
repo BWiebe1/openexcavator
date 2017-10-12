@@ -49,17 +49,23 @@ class Reach(threading.Thread):
         sentences = data.split('\n')
         position = {}
         for sentence in sentences:
-            if not sentence.startswith('$GPRMC'):
-                continue
-            parts = sentence.split(',')
-            if parts[2] != 'A':
-                logging.warning('invalid GPRMC data: %s', sentence)
-                continue
-            position['ts'] = datetime.datetime.strptime(parts[9]+parts[1][:6], '%d%m%y%H%M%S')
-            position['lat'] = self.parse_coordinate(parts[3], parts[4])
-            position['lng'] = self.parse_coordinate(parts[5], parts[6])
-            position['speed'] = float(parts[7]) * 1.852 #knots to km/h
-            position['heading'] = float(parts[8]) #0-360
+            if sentence.startswith('$GPRMC'):
+                parts = sentence.split(',')
+                if parts[2] != 'A':
+                    logging.warning('invalid GPRMC data: %s', sentence)
+                    continue
+                position['ts'] = datetime.datetime.strptime(parts[9]+parts[1][:6], '%d%m%y%H%M%S')
+                position['lat'] = self.parse_coordinate(parts[3], parts[4])
+                position['lng'] = self.parse_coordinate(parts[5], parts[6])
+                position['speed'] = float(parts[7]) * 1.852 #knots to km/h
+                position['heading'] = float(parts[8]) #0-360
+            elif sentence.startswith('$GPGST'):
+                parts = sentence.split(',')
+                position['acc'] = max(float(parts[6]), float(parts[7])) #meters
+            elif sentence.startswith('$GPGGA'):
+                parts = sentence.split(',')
+                position['alt'] = float(parts[9]) #meters
+                
         return position
 
 

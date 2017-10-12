@@ -40,16 +40,20 @@ function initMap() {
 function refreshPosition() {
 	var jqxhr = $.get( "/position").done(function (data) {
 			data = JSON.parse(data);
-			$('#plat').html(data.lat);
-			$('#plng').html(data.lng);
+			$('#plat').html(data.lat.toFixed(8));
+			$('#plng').html(data.lng.toFixed(8));
+			$('#palt').html(data.alt);
+			$('#pdir').html(data.heading);
+			$('#pacc').html(data.acc);
 			if (currentPosition === null) {
-				currentPosition = L.circle([data.lat, data.lng], 50).addTo(myMap);
+				currentPosition = L.circle([data.lat, data.lng], data.acc).addTo(myMap);
 				bounds = polyline.getBounds();
 				bounds.extend(new L.LatLng(data.lat, data.lng));
 				myMap.fitBounds(bounds);
 			}
 			else {
 				currentPosition.setLatLng(new L.LatLng(data.lat, data.lng));
+				currentPosition.setRadius(data.acc)
 			}
 			setTimeout(refreshPosition, 1000);
 		  })
