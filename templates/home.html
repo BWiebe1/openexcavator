@@ -8,6 +8,7 @@
 		<link rel="stylesheet" href="https://unpkg.com/leaflet@1.2.0/dist/leaflet.css" />
 		<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
 		<script src="https://unpkg.com/popper.js@1.12.5/dist/umd/popper.js"></script>
+		<script src="https://cdnjs.cloudflare.com/ajax/libs/proj4js/2.4.4/proj4.js"></script>
 		<script src="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/4.0.0-beta/js/bootstrap.min.js"></script>
 		<script src="https://cdnjs.cloudflare.com/ajax/libs/lodash.js/4.17.4/lodash.min.js"></script>
 		<script src="https://use.fontawesome.com/70120bc685.js"></script>
@@ -50,7 +51,7 @@
 			<div class="row">
 				<div class="col-2 border border-primary">
 					<h2 class="text-center">Height</h2>
-					<p class="text-center">
+					<p id="height" class="text-center">
 						Down: <br>1M
 					</p>
 					<p class="text-center">
@@ -72,7 +73,7 @@
 						<i class="fa fa-arrow-up fa-3x text-muted" aria-hidden="true"></i>
 					</p>
 					<h2 class="text-center">Direction</h2>
-					<p class="text-center">.25 M Left</p>
+					<p id="distance" class="text-center">.25 M Left</p>
 					<p class="text-center">
 						<i class="fa fa-arrow-left fa-3x text-success" aria-hidden="true"></i>
 						<i class="fa fa-arrow-left fa-2x text-success" aria-hidden="true"></i>
