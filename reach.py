@@ -51,8 +51,6 @@ class Reach(threading.Thread):
         for sentence in sentences:
             if not sentence.startswith('$GPRMC'):
                 continue
-            #if not sentence.startswith('$GPGSV'): TODO: use
-            #    continue
             parts = sentence.split(',')
             if parts[2] != 'A':
                 logging.warning('invalid GPRMC data: %s', sentence)
@@ -60,20 +58,30 @@ class Reach(threading.Thread):
             position['ts'] = datetime.datetime.strptime(parts[9]+parts[1][:6], '%d%m%y%H%M%S')
             position['lat'] = self.parse_coordinate(parts[3], parts[4])
             position['lng'] = self.parse_coordinate(parts[5], parts[6])
+            position['speed'] = float(parts[7]) * 1.852 #knots to km/h
+            position['heading'] = float(parts[8]) #0-360
         return position
 
 
     def run(self):
         self.running = True
+        buffer = ''
         while self.running:
             try:
                 if not self.connection:
                     self.connection = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
                     self.connection.connect((self.host, self.port))
-                data = self.connection.recv(1024)
-                position = self.parse_nmea(data.decode())
-                if position:
-                    self._position = position
+                data = self.connection.recv(256)
+                data = data.decode() #bytes to str
+                marker = data.find('\n$GPRMC')
+                if marker > -1:
+                    message = buffer + data[:marker+1]
+                    buffer = data[marker+1:]
+                    position = self.parse_nmea(message)
+                    if position:
+                        self._position = position
+                else:
+                    buffer += data
             except Exception as exc:
                 logging.warning('cannot update position data: %s, reconnecting', exc)
                 self.connection = None
