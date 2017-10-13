@@ -5,7 +5,7 @@ The application is intended to be used with a high precision GPS receiver for as
 It is designed to run on a Raspberry Pi (but can run on other devices as well) and present a web interface used by the operator on a smartphone / tablet / notebook PC.
 
 ## Installation
-Install dependencies:
+Install dependencies (use `sudo apt-get install python-pip python-dev` if you don't have pip installed:
 ```
 pip install -r requirements.txt
 ```
@@ -16,9 +16,9 @@ git clone https://github.com/dkwiebe/openexcavator
 Edit relevant entries in the settings.py file such as GPS host and port.  
 To enable the application to start at boot copy the `openexcavator.service` systemd file from the `scripts` folder to `/etc/systemd/system` and enable it using:
 ```
-systemctl daemon-reload  
-systemctl enable georgina
-systemctl start georgina
+sudo systemctl daemon-reload  
+sudo systemctl enable openexcavator
+sudo systemctl start openexcavator
 ```
 Check the logs to be sure the application is working as expected:
 ```
