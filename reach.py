@@ -64,7 +64,7 @@ class Reach(threading.Thread):
                 position['acc'] = max(float(parts[6]), float(parts[7])) #meters
             elif sentence.startswith('$GPGGA'):
                 parts = sentence.split(',')
-                position['alt'] = float(parts[9]) #meters
+                position['alt'] = float(parts[9]) + float(parts[11])#meters
                 
         return position
 

@@ -48,6 +48,6 @@ if __name__ == "__main__":
         template_path=settings.TEMPLATE_PATH,
         static_path=settings.STATIC_PATH
     )
-    logging.info('starting excavator on %s:%s ...', settings.ADDRESS, settings.PORT)
+    logging.info('starting openexcavator on %s:%s ...', settings.ADDRESS, settings.PORT)
     application.listen(settings.PORT, address=settings.ADDRESS)
     tornado.ioloop.IOLoop.instance().start()

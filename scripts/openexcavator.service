@@ -1,0 +1,14 @@
+[Unit]
+Description=openexcavator
+After=default.target
+
+[Service]
+User=pi
+Group=pi
+RestartSec=3
+Restart=always
+WorkingDirectory=/home/pi/openexcavator
+ExecStart=/usr/bin/python openexcavator.py
+
+[Install]
+WantedBy=default.target
