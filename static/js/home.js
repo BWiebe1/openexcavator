@@ -102,6 +102,7 @@ function initMap() {
 		.openOn(myMap);
 	}
 	myMap.on('click', onMapClick);
+	myMap.invalidateSize();
 	refreshPosition();
 }
 
@@ -113,6 +114,7 @@ function refreshPosition() {
 			$('#palt').html(data.alt);
 			$('#pdir').html(data.heading);
 			$('#pacc').html(data.acc);
+			$('#ptim').html(data.ts);
 			var result = getDistance(path, data);
 			$('#distance').html(result[0].toFixed(2) + ' M');
 			$('#height').html(result[2].toFixed(2) + ' M');
@@ -139,5 +141,7 @@ $(document).ready(function() {
 });
 
 $(window).on( "load", function() {
-	myMap.invalidateSize();
+	if (myMap !== null) {
+		myMap.invalidateSize();
+	}
 });
