@@ -24,6 +24,7 @@ class Reach(threading.Thread):
         self.running = False
         self._position = None
 
+
     def parse_coordinate(self, coord, hemi):
         """
         Parse ddmm.mmmm coordinate into dd.ddddd format
@@ -65,7 +66,7 @@ class Reach(threading.Thread):
             elif sentence.startswith('$GPGGA'):
                 parts = sentence.split(',')
                 position['alt'] = float(parts[9]) + float(parts[11])#meters
-                
+
         return position
 
 
@@ -75,22 +76,22 @@ class Reach(threading.Thread):
         while self.running:
             try:
                 if not self.connection:
-                    self.connection = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-                    self.connection.connect((self.host, self.port))
+                    self.connection = socket.create_connection((self.host, self.port), 3)
                 data = self.connection.recv(256)
-                data = data.decode() #bytes to str
-                marker = data.find('\n$GPRMC')
+                if not data:
+                    raise Exception('no data received on socket for 3 seconds')
+                buffer += data.decode() #bytes to str
+                marker = buffer.find('\n$GPRMC')
                 if marker > -1:
-                    message = buffer + data[:marker+1]
-                    buffer = data[marker+1:]
+                    message = buffer[:marker+1]
+                    buffer = buffer[marker+1:]
                     position = self.parse_nmea(message)
                     if position:
                         self._position = position
-                else:
-                    buffer += data
             except Exception as exc:
                 logging.warning('cannot update position data: %s, reconnecting', exc)
                 self.connection = None
+                time.sleep(3)
             time.sleep(0.1)
 
 

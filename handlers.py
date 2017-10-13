@@ -10,9 +10,10 @@ import tornado.web
 
 
 def json_encoder(obj):
+    """Encode datetime.datetime objects using ISO format"""
     if isinstance(obj, datetime.datetime):
         return obj.isoformat()
-    
+
 
 class BaseHandler(tornado.web.RequestHandler):
     """
@@ -29,22 +30,28 @@ class BaseHandler(tornado.web.RequestHandler):
     def post(self):
         self.set_status(400)
         self.finish('POST not allowed')
-        
+
 
 class HomeHandler(BaseHandler):
-    
+    """
+    Handler for / request, renders home.html
+    """
 
     def get(self):
         self.render('home.html')
 
 
 class PositionHandler(BaseHandler):
-    
-    
+    """
+    Handler for async /position request.
+    Get the data from the GPS thread and return JSON encoded position
+    """
+
+
     def initialize(self, gpsc):
         self.gpsc = gpsc
-    
-    
+
+
     def get(self):
         response = json.dumps(self.gpsc.get_position(), default=json_encoder)
         self.finish(response)

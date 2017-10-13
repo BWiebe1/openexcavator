@@ -9,8 +9,8 @@ import logging
 PORT = 8000
 ADDRESS = '127.0.0.1'
 
-logging.basicConfig(level=logging.DEBUG,
-    format='[%(asctime)s] - %(levelname)s - %(message)s', datefmt='%Y-%m-%d %H:%M:%S')
+logging.basicConfig(level=logging.DEBUG, datefmt='%Y-%m-%d %H:%M:%S',
+                    format='[%(asctime)s] - %(levelname)s - %(message)s')
 logging.getLogger('tornado').setLevel(logging.WARNING)
 
 #Tornado settings
