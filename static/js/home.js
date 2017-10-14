@@ -11,6 +11,19 @@ var polyline = null;
 var path = null;
 var pointById = {};
 
+function formatDelta(x) {
+	if (x > 0) {
+		return '+' + x.toFixed(2) + ' M' 
+	}
+	return x.toFixed(2) + ' M';
+}
+
+function pointToPointDistance(x1, y1, x2, y2) {
+	  var dx = x2 - x1;
+	  var dy = y2 - y1;
+	  return Math.sqrt(dx * dx + dy * dy); 
+}
+
 function pointToSegmentDistance(x, y, x1, y1, x2, y2) {
 	  var A = x - x1;
 	  var B = y - y1;
@@ -34,12 +47,24 @@ function pointToSegmentDistance(x, y, x1, y1, x2, y2) {
 	    xx = x1 + param * C;
 	    yy = y1 + param * D;
 	  }
-	  var dx = x - xx;
-	  var dy = y - yy;
-	  return Math.sqrt(dx * dx + dy * dy);
-	}
+	  return pointToPointDistance(xx, yy, x, y);
+}
 
-function getDistance(path, point) {
+function inverseDistanceWeight(x, y, x1, y1, v1, x2, y2, v2) {
+	var d1 = pointToPointDistance(x, y, x1, y1);
+	if (d1 === 0) {
+		return v1;
+	}
+	var d2 = pointToPointDistance(x, y, x2, y2);
+	if (d2 === 0) {
+		return v2;
+	}
+	var w1 = 1 / (d1 ** 2);
+	var w2 = 1 / (d2 ** 2);
+	return (w1 * v1 + w2 * v2) / (w1 + w2);
+}
+
+function getPolylineDistance(path, point) {
 	var minDist = 1000000;
 	var angleDif = 0;
 	var altDiff = 0;
@@ -54,7 +79,8 @@ function getDistance(path, point) {
 		var dist = pointToSegmentDistance(projCoords[0], projCoords[1], c1.lng, c1.lat, c2.lng, c2.lat);
 		if (dist < minDist) {
 			minDist = dist;
-			altDiff = (c2.desiredAlt + c2.desiredAlt) / 2 - point.alt;
+			altDiff = inverseDistanceWeight(projCoords[0], projCoords[1], c1.lng, c1.lat, c1.desiredAlt, c2.lng, c2.lat, c2.desiredAlt);
+			altDiff = altDiff - point.alt;
 			angleDif = angle-point.heading;
 		}
 	}
@@ -108,6 +134,7 @@ function initMap() {
 
 function refreshPosition() {
 	var jqxhr = $.get( "/position").done(function (data) {
+		try {
 			data = JSON.parse(data);
 			$('#plat').html(data.lat.toFixed(8));
 			$('#plng').html(data.lng.toFixed(8));
@@ -115,9 +142,9 @@ function refreshPosition() {
 			$('#pdir').html(data.heading);
 			$('#pacc').html(data.acc);
 			$('#ptim').html(data.ts);
-			var result = getDistance(path, data);
-			$('#distance').html(result[0].toFixed(2) + ' M');
-			$('#height').html(result[2].toFixed(2) + ' M');
+			var result = getPolylineDistance(path, data);
+			$('#distance').html(formatDelta(result[0]));
+			$('#height').html(formatDelta(result[2]));
 			if (currentPosition === null) {
 				currentPosition = L.circle([data.lat, data.lng], data.acc).addTo(myMap);
 				bounds = polyline.getBounds();
@@ -128,12 +155,16 @@ function refreshPosition() {
 				currentPosition.setLatLng(new L.LatLng(data.lat, data.lng));
 				currentPosition.setRadius(data.acc);
 			}
-			setTimeout(refreshPosition, 1000);
-		  })
-		  .fail(function() {
-		    alert( "cannot update position" );
-		    setTimeout(refreshPosition, 5000);
-		  })
+		}
+		catch (err) {
+			alert('cannot parse position data: ' + data + ', error: ' + err.message); 
+		}
+		setTimeout(refreshPosition, 1000);
+	})
+	.fail(function() {
+		alert( "cannot update position" );
+		setTimeout(refreshPosition, 5000);
+	});
 }
 
 $(document).ready(function() {
