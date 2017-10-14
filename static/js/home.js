@@ -59,8 +59,8 @@ function inverseDistanceWeight(x, y, x1, y1, v1, x2, y2, v2) {
 	if (d2 === 0) {
 		return v2;
 	}
-	var w1 = 1 / (d1 ** 2);
-	var w2 = 1 / (d2 ** 2);
+	var w1 = 1 / d1;
+	var w2 = 1 / d2;
 	return (w1 * v1 + w2 * v2) / (w1 + w2);
 }
 
