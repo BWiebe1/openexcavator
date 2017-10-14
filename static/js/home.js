@@ -1,8 +1,8 @@
 var srcProj = '+proj=longlat +datum=WGS84 +no_defs';
 var dstProj = '+proj=aea +lat_1=29.5 +lat_2=45.5 +lat_0=37.5 +lon_0=-96 +x_0=0 +y_0=0 +datum=NAD83 +units=m +no_defs';
 
-var startAltitude = 840;
-var stopAltitude = 850;
+var startAltitude = 780;
+var stopAltitude = 800;
 
 var myMap = null;
 var currentPosition = null;
@@ -80,8 +80,8 @@ function getPolylineDistance(path, point) {
 		if (dist < minDist) {
 			minDist = dist;
 			altDiff = inverseDistanceWeight(projCoords[0], projCoords[1], c1.lng, c1.lat, c1.desiredAlt, c2.lng, c2.lat, c2.desiredAlt);
-			altDiff = altDiff - point.alt;
-			angleDif = angle-point.heading;
+			altDiff = point.alt - altDiff;
+			angleDif = angle - point.heading;
 		}
 	}
 	return [minDist, angleDif, altDiff];
@@ -134,8 +134,8 @@ function initMap() {
 
 function refreshPosition() {
 	var jqxhr = $.get( "/position").done(function (data) {
+		var data = JSON.parse(data);
 		try {
-			data = JSON.parse(data);
 			$('#plat').html(data.lat.toFixed(8));
 			$('#plng').html(data.lng.toFixed(8));
 			$('#palt').html(data.alt);
