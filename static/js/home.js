@@ -143,8 +143,32 @@ function refreshPosition() {
 			$('#pacc').html(data.acc);
 			$('#ptim').html(data.ts);
 			var result = getPolylineDistance(path, data);
-			$('#distance').html(formatDelta(result[0]));
 			$('#height').html(formatDelta(result[2]));
+			$('#distance').html(formatDelta(result[0]));
+			if (result[2] > 0) {
+				$('.fa-arrow-left').addClass('text-success');
+				$('.fa-arrow-left').removeClass('text-muted');
+				$('.fa-arrow-right').addClass('text-muted');
+				$('.fa-arrow-right').removeClass('text-success');
+			}
+			else {
+				$('.fa-arrow-left').addClass('text-muted');
+				$('.fa-arrow-left').removeClass('text-success');
+				$('.fa-arrow-right').addClass('text-success');
+				$('.fa-arrow-right').removeClass('text-muted');
+			}
+			if (result[2] > 0) {
+				$('.fa-arrow-down').addClass('text-success');
+				$('.fa-arrow-down').removeClass('text-muted');
+				$('.fa-arrow-up').addClass('text-muted');
+				$('.fa-arrow-up').removeClass('text-success');
+			}
+			else {
+				$('.fa-arrow-down').addClass('text-muted');
+				$('.fa-arrow-down').removeClass('text-success');
+				$('.fa-arrow-up').addClass('text-success');
+				$('.fa-arrow-up').removeClass('text-muted');
+			}
 			if (currentPosition === null) {
 				currentPosition = L.circle([data.lat, data.lng], data.acc).addTo(myMap);
 				bounds = polyline.getBounds();
