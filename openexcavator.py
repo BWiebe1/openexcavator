@@ -42,6 +42,7 @@ if __name__ == "__main__":
         [
             (r"/", handlers.HomeHandler),
             (r"/position", handlers.PositionHandler, {'gpsc': gpsc}),
+            (r"/update", handlers.UpdateHandler),
         ],
         cookie_secret=settings.COOKIE_SECRET,
         xsrf_cookies=True,

@@ -1,15 +1,19 @@
 var srcProj = '+proj=longlat +datum=WGS84 +no_defs';
 var dstProj = '+proj=aea +lat_1=29.5 +lat_2=45.5 +lat_0=37.5 +lon_0=-96 +x_0=0 +y_0=0 +datum=NAD83 +units=m +no_defs';
 
-var startAltitude = 780;
-var stopAltitude = 800;
-
 var myMap = null;
 var currentPosition = null;
 var bounds = null;
 var polyline = null;
 var path = null;
 var pointById = {};
+var startAltitude = null;
+var stopAltitude = null;
+
+function getCookie(name) {
+    var r = document.cookie.match("\\b" + name + "=([^;]*)\\b");
+    return r ? r[1] : undefined;
+}
 
 function formatDelta(x) {
 	if (x > 0) {
@@ -87,16 +91,6 @@ function getPolylineDistance(path, point) {
 	return [minDist, angleDif, altDiff];
 }
 
-function getGeoJSON() {
-	var jqxhr = $.get( "/static/data/path.geojson").done(function (data) {
-		path = JSON.parse(data)['features'];
-		initMap();
-	  })
-	  .fail(function() {
-	    alert( "cannot retrieve GeoJSON data" );
-	  });
-}
-
 function initMap() {
 	myMap = L.map('mapid').setView([53.58442963725551, -110.51799774169922], 18);
 	L.tileLayer('https://api.tiles.mapbox.com/v4/{id}/{z}/{x}/{y}.png?access_token=pk.eyJ1IjoibWFwYm94IiwiYSI6ImNpejY4NXVycTA2emYycXBndHRqcmZ3N3gifQ.rJcFIG214AriISLbB6B5aw', {
@@ -107,7 +101,7 @@ function initMap() {
 		id: 'mapbox.streets'
 		}).addTo(myMap);
 	var latlngs = [];
-	var deltaAltitude = (stopAltitude-startAltitude) / path.length;
+	var deltaAltitude = (stopAltitude-startAltitude) / (path.length - 1);
 	for (var i=0; i<path.length;i++) {
 		var coords = path[i].geometry.coordinates;
 		var circle = L.circle(new L.LatLng(coords[1], coords[0]), 2).addTo(myMap);
@@ -138,9 +132,9 @@ function refreshPosition() {
 		try {
 			$('#plat').html(data.lat.toFixed(8));
 			$('#plng').html(data.lng.toFixed(8));
-			$('#palt').html(data.alt);
+			$('#palt').html(data.alt.toFixed(2));
 			$('#pdir').html(data.heading);
-			$('#pacc').html(data.acc);
+			$('#pacc').html(data.acc.toFixed(2));
 			$('#ptim').html(data.ts);
 			var result = getPolylineDistance(path, data);
 			$('#height').html(formatDelta(result[2]));
@@ -181,7 +175,7 @@ function refreshPosition() {
 			}
 		}
 		catch (err) {
-			alert('cannot parse position data: ' + data + ', error: ' + err.message); 
+			console.log('cannot parse position data: ' + data + ', error: ' + err.message); 
 		}
 		setTimeout(refreshPosition, 1000);
 	})
@@ -192,7 +186,27 @@ function refreshPosition() {
 }
 
 $(document).ready(function() {
-	getGeoJSON();
+	startAltitude = parseFloat($('#startAltitude').val());
+	stopAltitude = parseFloat($('#stopAltitude').val());
+	path = JSON.parse($('#path').val())['features'];
+	initMap();
+	$('#saveChanges').click(function() {
+		  var data = {};
+		  data['start_altitude'] = $('#startAltitude').val();
+		  data['stop_altitude'] = $('#stopAltitude').val();
+		  data['path'] = $('#path').val();
+		  data['_xsrf'] = getCookie("_xsrf");
+		  $.post('/update', data=data).done(function (data) {
+				if (data == 'OK') {
+					window.location.href = "/";
+				}
+				else {
+					alert('update failed: ' + data);
+				}
+		  }).fail(function() {
+				alert( "update failed" );
+		});
+	});
 });
 
 $(window).on( "load", function() {

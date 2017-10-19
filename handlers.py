@@ -8,6 +8,8 @@ import datetime
 import json
 import tornado.web
 
+import database
+
 
 def json_encoder(obj):
     """Encode datetime.datetime objects using ISO format"""
@@ -38,7 +40,8 @@ class HomeHandler(BaseHandler):
     """
 
     def get(self):
-        self.render('home.html')
+        config = database.get_config()
+        self.render('home.html', config=config, token=self.xsrf_token)
 
 
 class PositionHandler(BaseHandler):
@@ -55,3 +58,28 @@ class PositionHandler(BaseHandler):
     def get(self):
         response = json.dumps(self.gpsc.get_position(), default=json_encoder)
         self.finish(response)
+
+
+class UpdateHandler(BaseHandler):
+    """
+    Handler for updating config data.
+    """
+
+
+    def post(self):
+        start_altitude = self.get_argument('start_altitude', None)
+        stop_altitude = self.get_argument('stop_altitude', None)
+        path = self.get_argument('path', None)
+        try:
+            start_altitude = float(start_altitude)
+            stop_altitude = float(stop_altitude)
+            pathvalue = json.loads(path)
+            if not 'features' in pathvalue:
+                raise Exception('missing features from GeoJSON')
+        except Exception as exc:
+            self.set_status(400)
+            return self.finish('invalid input data: %s' % exc)
+
+        data = {'start_altitude': start_altitude, 'stop_altitude': stop_altitude, 'path': path}
+        database.set_config(data)
+        self.finish('OK')
