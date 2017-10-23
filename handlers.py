@@ -69,10 +69,12 @@ class UpdateHandler(BaseHandler):
     def post(self):
         start_altitude = self.get_argument('start_altitude', None)
         stop_altitude = self.get_argument('stop_altitude', None)
+        antenna_height = self.get_argument('antenna_height', None)
         path = self.get_argument('path', None)
         try:
             start_altitude = float(start_altitude)
             stop_altitude = float(stop_altitude)
+            antenna_height = float(antenna_height)
             pathvalue = json.loads(path)
             if not 'features' in pathvalue:
                 raise Exception('missing features from GeoJSON')
@@ -80,6 +82,7 @@ class UpdateHandler(BaseHandler):
             self.set_status(400)
             return self.finish('invalid input data: %s' % exc)
 
-        data = {'start_altitude': start_altitude, 'stop_altitude': stop_altitude, 'path': path}
+        data = {'start_altitude': start_altitude, 'stop_altitude': stop_altitude,
+                'antenna_height': antenna_height, 'path': path}
         database.set_config(data)
         self.finish('OK')

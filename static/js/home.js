@@ -5,10 +5,11 @@ var myMap = null;
 var currentPosition = null;
 var bounds = null;
 var polyline = null;
-var path = null;
 var pointById = {};
 var startAltitude = null;
 var stopAltitude = null;
+var antennaHeight = null;
+var path = null;
 
 function getCookie(name) {
     var r = document.cookie.match("\\b" + name + "=([^;]*)\\b");
@@ -84,7 +85,7 @@ function getPolylineDistance(path, point) {
 		if (dist < minDist) {
 			minDist = dist;
 			altDiff = inverseDistanceWeight(projCoords[0], projCoords[1], c1.lng, c1.lat, c1.desiredAlt, c2.lng, c2.lat, c2.desiredAlt);
-			altDiff = point.alt - altDiff;
+			altDiff = point.alt - antennaHeight - altDiff;
 			angleDif = angle - point.heading;
 		}
 	}
@@ -140,28 +141,16 @@ function refreshPosition() {
 			$('#height').html(formatDelta(result[2]));
 			$('#distance').html(formatDelta(result[0]));
 			if (result[2] > 0) {
-				$('.fa-arrow-left').addClass('text-success');
-				$('.fa-arrow-left').removeClass('text-muted');
-				$('.fa-arrow-right').addClass('text-muted');
-				$('.fa-arrow-right').removeClass('text-success');
-			}
-			else {
-				$('.fa-arrow-left').addClass('text-muted');
-				$('.fa-arrow-left').removeClass('text-success');
-				$('.fa-arrow-right').addClass('text-success');
-				$('.fa-arrow-right').removeClass('text-muted');
-			}
-			if (result[2] > 0) {
-				$('.fa-arrow-down').addClass('text-success');
 				$('.fa-arrow-down').removeClass('text-muted');
-				$('.fa-arrow-up').addClass('text-muted');
+				$('.fa-arrow-down').addClass('text-success');
 				$('.fa-arrow-up').removeClass('text-success');
+				$('.fa-arrow-up').addClass('text-muted');
 			}
 			else {
-				$('.fa-arrow-down').addClass('text-muted');
 				$('.fa-arrow-down').removeClass('text-success');
-				$('.fa-arrow-up').addClass('text-success');
+				$('.fa-arrow-down').addClass('text-muted');
 				$('.fa-arrow-up').removeClass('text-muted');
+				$('.fa-arrow-up').addClass('text-success');
 			}
 			if (currentPosition === null) {
 				currentPosition = L.circle([data.lat, data.lng], data.acc).addTo(myMap);
@@ -188,12 +177,14 @@ function refreshPosition() {
 $(document).ready(function() {
 	startAltitude = parseFloat($('#startAltitude').val());
 	stopAltitude = parseFloat($('#stopAltitude').val());
+	antennaHeight = parseFloat($('#antennaHeight').val());
 	path = JSON.parse($('#path').val())['features'];
 	initMap();
 	$('#saveChanges').click(function() {
 		  var data = {};
 		  data['start_altitude'] = $('#startAltitude').val();
 		  data['stop_altitude'] = $('#stopAltitude').val();
+		  data['antenna_height'] = $('#antennaHeight').val();
 		  data['path'] = $('#path').val();
 		  data['_xsrf'] = getCookie("_xsrf");
 		  $.post('/update', data=data).done(function (data) {

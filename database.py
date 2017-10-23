@@ -51,6 +51,7 @@ def populate_config():
     cursor = conn.cursor()
     cursor.execute("INSERT INTO config(key, value) VALUES('start_altitude', '700')")
     cursor.execute("INSERT INTO config(key, value) VALUES('stop_altitude', '800')")
+    cursor.execute("INSERT INTO config(key, value) VALUES('antenna_height', '10')")
     cursor.execute("""INSERT INTO config(key, value) VALUES('path', '{
         "type": "FeatureCollection",
         "crs": { "type": "name", "properties": { "name": "urn:ogc:def:crs:OGC:1.3:CRS84" } },
