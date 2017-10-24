@@ -17,6 +17,3 @@ logging.getLogger('tornado').setLevel(logging.WARNING)
 TEMPLATE_PATH = 'templates'
 STATIC_PATH = 'static'
 COOKIE_SECRET = '__TO_BE_GENERATED__excavatorX__'
-
-GPS_HOST = '127.0.0.1'
-GPS_PORT = 9000

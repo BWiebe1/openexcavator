@@ -9,6 +9,7 @@ import signal
 import tornado.ioloop
 import tornado.web
 
+import database
 import handlers
 import settings
 from reach import Reach
@@ -36,7 +37,8 @@ def configure_signals():
 
 if __name__ == "__main__":
     configure_signals()
-    gpsc = Reach(settings.GPS_HOST, settings.GPS_PORT)
+    config = database.get_config()
+    gpsc = Reach(config['gps_host'], int(config['gps_port']))
     gpsc.start()
     application = tornado.web.Application(
         [

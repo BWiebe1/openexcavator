@@ -67,11 +67,14 @@ class UpdateHandler(BaseHandler):
 
 
     def post(self):
+        gps_host = self.get_argument('gps_host', None)
+        gps_port = self.get_argument('gps_port', None)
         start_altitude = self.get_argument('start_altitude', None)
         stop_altitude = self.get_argument('stop_altitude', None)
         antenna_height = self.get_argument('antenna_height', None)
         path = self.get_argument('path', None)
         try:
+            gps_port = int(gps_port)
             start_altitude = float(start_altitude)
             stop_altitude = float(stop_altitude)
             antenna_height = float(antenna_height)
@@ -82,7 +85,7 @@ class UpdateHandler(BaseHandler):
             self.set_status(400)
             return self.finish('invalid input data: %s' % exc)
 
-        data = {'start_altitude': start_altitude, 'stop_altitude': stop_altitude,
-                'antenna_height': antenna_height, 'path': path}
+        data = {'start_altitude': start_altitude, 'stop_altitude': stop_altitude, 'path': path,
+                'antenna_height': antenna_height, 'gps_host': gps_host, 'gps_port': gps_port}
         database.set_config(data)
         self.finish('OK')

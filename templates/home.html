@@ -6,6 +6,7 @@
 	<meta charset="utf-8">
 	<link rel="stylesheet" href="/static/css/bootstrap.min.css" />
 	<link rel="stylesheet" href="/static/css/leaflet.css" />
+	<link rel="stylesheet" href="/static/css/home.css" />
 	<script	src="/static/js/jquery.min.js"></script>
 	<script src="/static/js/popper.js"></script>
 	<script	src="/static/js/proj4.js"></script>
@@ -26,6 +27,14 @@
 	        </button>
 	      </div>
 	      <div class="modal-body">
+  	      	<div class="input-group">
+		    	<span class="input-group-addon">GPS Host</span>
+		    	<input id="gpsHost" type="text" class="form-control" name="gpsHost" placeholder="gpsHost" value="{{config['gps_host']}}">
+          	</div>
+  	    	<div class="input-group">
+		    	<span class="input-group-addon">GPS Port</span>
+		    	<input id="gpsPort" type="text" class="form-control" name="gpsPort" placeholder="gpsPort" value="{{config['gps_port']}}">
+          	</div>
 	      	<div class="input-group">
 		    	<span class="input-group-addon">Start Altitude</span>
 		    	<input id="startAltitude" type="text" class="form-control" name="startAltitude" placeholder="startAltiude" value="{{config['start_altitude']}}">

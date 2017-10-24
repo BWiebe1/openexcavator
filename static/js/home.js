@@ -182,6 +182,9 @@ $(document).ready(function() {
 	initMap();
 	$('#saveChanges').click(function() {
 		  var data = {};
+		  data['gps_host'] = $('#gpsHost').val();
+		  data['gps_port'] = $('#gpsPort').val();
+		  data['start_altitude'] = $('#startAltitude').val();
 		  data['start_altitude'] = $('#startAltitude').val();
 		  data['stop_altitude'] = $('#stopAltitude').val();
 		  data['antenna_height'] = $('#antennaHeight').val();

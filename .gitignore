@@ -1,3 +1,4 @@
+openexcavator.db
 *.log
 *.pyc
 __pycache__/

@@ -49,6 +49,8 @@ def populate_config():
     """Populate configuration table with default values"""
     conn = sqlite3.connect('openexcavator.db')
     cursor = conn.cursor()
+    cursor.execute("INSERT INTO config(key, value) VALUES('gps_host', '127.0.0.1')")
+    cursor.execute("INSERT INTO config(key, value) VALUES('gps_port', '9000')")
     cursor.execute("INSERT INTO config(key, value) VALUES('start_altitude', '700')")
     cursor.execute("INSERT INTO config(key, value) VALUES('stop_altitude', '800')")
     cursor.execute("INSERT INTO config(key, value) VALUES('antenna_height', '10')")
