@@ -3,11 +3,11 @@ Description=openexcavator
 After=default.target
 
 [Service]
-User=pi
-Group=pi
+User=www-data
+Group=www-data
 RestartSec=3
 Restart=always
-WorkingDirectory=/home/pi/openexcavator
+WorkingDirectory=/var/www/openexcavator
 ExecStart=/usr/bin/python openexcavator.py
 
 [Install]

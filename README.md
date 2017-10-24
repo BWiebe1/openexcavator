@@ -9,13 +9,17 @@ Install dependencies (use `sudo apt-get install python-pip python-dev` if you do
 ```
 pip install -r requirements.txt
 ```
-Copy source files
+Login as the `www-data` user and copy source files
 ```
+sudo -u www-data -s /bin/bash #login
+cd /var/www
 git clone https://github.com/dkwiebe/openexcavator
+python openexcavator/database.py #initialize database entries
+exit #logout
 ```
-Edit relevant entries in the settings.py file such as GPS host and port.  
 To enable the application to start at boot copy the `openexcavator.service` systemd file from the `scripts` folder to `/etc/systemd/system` and enable it using:
 ```
+sudo cp /var/www/openexcavator/scripts/openexcavator.service /etc/systemd/system/
 sudo systemctl daemon-reload  
 sudo systemctl enable openexcavator
 sudo systemctl start openexcavator
@@ -32,10 +36,12 @@ Afterwards edit `/etc/nginx/sites-available/default`:
 ```
 server {
         listen 80 default_server;
-
         location / {
                 proxy_pass http://127.0.0.1:8000;
         }
-
+        location /static/ {
+            root /var/www/openexcavator;
+            access_log off;
+        }
 }
 ```
