@@ -41,7 +41,8 @@ class HomeHandler(BaseHandler):
 
     def get(self):
         config = database.get_config()
-        self.render('home.html', config=config, token=self.xsrf_token)
+        error_msg = self.get_argument('error_msg', '')
+        self.render('home.html', config=config, error_msg=error_msg)
 
 
 class PositionHandler(BaseHandler):
@@ -72,20 +73,28 @@ class UpdateHandler(BaseHandler):
         start_altitude = self.get_argument('start_altitude', None)
         stop_altitude = self.get_argument('stop_altitude', None)
         antenna_height = self.get_argument('antenna_height', None)
-        path = self.get_argument('path', None)
+        path = None
+        if self.request.files:
+            file_info = self.request.files['path'][0]
+            path = file_info['body']
+        error_msg = None
         try:
             gps_port = int(gps_port)
             start_altitude = float(start_altitude)
             stop_altitude = float(stop_altitude)
             antenna_height = float(antenna_height)
-            pathvalue = json.loads(path)
-            if not 'features' in pathvalue:
-                raise Exception('missing features from GeoJSON')
+            if path:
+                try:
+                    pathvalue = json.loads(path)
+                    if not 'features' in pathvalue:
+                        error_msg = 'missing features from GeoJSON'
+                except ValueError:
+                    error_msg = 'JSON data is not valid'
         except Exception as exc:
-            self.set_status(400)
-            return self.finish('invalid input data: %s' % exc)
-
+            error_msg = 'invalid input data: %s' % exc
+        if error_msg:
+            return self.redirect('/?error_msg=' + tornado.escape.url_escape(error_msg))
         data = {'start_altitude': start_altitude, 'stop_altitude': stop_altitude, 'path': path,
                 'antenna_height': antenna_height, 'gps_host': gps_host, 'gps_port': gps_port}
         database.set_config(data)
-        self.finish('OK')
+        self.redirect('/')

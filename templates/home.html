@@ -26,36 +26,39 @@
 	          <span aria-hidden="true">&times;</span>
 	        </button>
 	      </div>
+          <form enctype="multipart/form-data" action="/update" method="post">
+          {% module xsrf_form_html() %}
 	      <div class="modal-body">
-  	      	<div class="input-group">
-		    	<span class="input-group-addon">GPS Host</span>
-		    	<input id="gpsHost" type="text" class="form-control" name="gpsHost" placeholder="gpsHost" value="{{config['gps_host']}}">
-          	</div>
-  	    	<div class="input-group">
-		    	<span class="input-group-addon">GPS Port</span>
-		    	<input id="gpsPort" type="text" class="form-control" name="gpsPort" placeholder="gpsPort" value="{{config['gps_port']}}">
-          	</div>
-	      	<div class="input-group">
-		    	<span class="input-group-addon">Start Altitude</span>
-		    	<input id="startAltitude" type="text" class="form-control" name="startAltitude" placeholder="startAltiude" value="{{config['start_altitude']}}">
-          	</div>
-	      	<div class="input-group">
-		    	<span class="input-group-addon">Stop Altitude</span>
-		    	<input id="stopAltitude" type="text" class="form-control" name="stopAltitude" placeholder="stopAltiude" value="{{config['stop_altitude']}}">
-          	</div>
-	      	<div class="input-group">
-		    	<span class="input-group-addon">Antenna Height</span>
-		    	<input id="antennaHeight" type="text" class="form-control" name="antennaHeight" placeholder="antennaHeight" value="{{config['antenna_height']}}">
-          	</div>
-	      	<div class="input-group">
-		    	<span class="input-group-addon">GeoJSON</span>
-		    	<input id="path" type="text" class="form-control" name="path" placeholder="path" value="{{config['path']}}">
-          	</div>
-	      </div>
-	      <div class="modal-footer">
-	        <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
-	        <button type="button" class="btn btn-primary" id="saveChanges">Save changes</button>
-	      </div>
+	  	      	<div class="input-group">
+			    	<span class="input-group-addon">GPS Host</span>
+			    	<input id="gps_host" type="text" class="form-control" name="gps_host" placeholder="gps_host" value="{{config['gps_host']}}">
+	          	</div>
+	  	    	<div class="input-group">
+			    	<span class="input-group-addon">GPS Port</span>
+			    	<input id="gps_port" type="text" class="form-control" name="gps_port" placeholder="gps_port" value="{{config['gps_port']}}">
+	          	</div>
+		      	<div class="input-group">
+			    	<span class="input-group-addon">Start Altitude</span>
+			    	<input id="start_altitude" type="text" class="form-control" name="start_altitude" placeholder="start_altitude" value="{{config['start_altitude']}}">
+	          	</div>
+		      	<div class="input-group">
+			    	<span class="input-group-addon">Stop Altitude</span>
+			    	<input id="stop_altitude" type="text" class="form-control" name="stop_altitude" placeholder="stop_altitude" value="{{config['stop_altitude']}}">
+	          	</div>
+		      	<div class="input-group">
+			    	<span class="input-group-addon">Antenna Height</span>
+			    	<input id="antenna_height" type="text" class="form-control" name="antenna_height" placeholder="antenna_height" value="{{config['antenna_height']}}">
+	          	</div>
+		      	<div class="input-group">
+			    	<span class="input-group-addon">GeoJSON</span>
+			    	<input id="path" type="file" class="form-control" name="path" placeholder="path" data-text="{{config['path']}}">
+	          	</div>
+		      </div>
+		      <div class="modal-footer">
+		        <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+		        <button type="submit" class="btn btn-primary" id="saveChanges">Save changes</button>
+		      </div>
+	      </form>
 	    </div>
 	  </div>
 	</div>
@@ -102,10 +105,10 @@
 					<i class="fa fa-arrow-down fa-3x text-muted" aria-hidden="true"></i>
 				</p>
 				<p class="text-center">
-					<i class="fa fa-arrow-down fa-2x text-success" aria-hidden="true"></i>
+					<i class="fa fa-arrow-down fa-2x text-muted" aria-hidden="true"></i>
 				</p>
 				<p class="text-center">
-					<i class="fa fa-arrow-down text-success" aria-hidden="true"></i>
+					<i class="fa fa-arrow-down text-muted" aria-hidden="true"></i>
 				</p>
 				<p class="text-center">
 					<i class="fa fa-arrow-up text-muted" aria-hidden="true"></i>
@@ -124,5 +127,8 @@
 			</div>
 		</div>
 	</div>
+    {% if error_msg %}
+    	<p class="message">{{error_msg}}</p>
+    {% end %}
 </body>
 </html>

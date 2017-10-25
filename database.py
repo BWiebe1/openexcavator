@@ -29,6 +29,8 @@ def set_config(data):
     cursor = conn.cursor()
     config = get_config()
     for key, value in config.items():
+        if data[key] is None:
+            continue
         if str(value) != str(data[key]):
             cursor.execute("UPDATE config SET value=? WHERE key=?", (data[key], key))
             conn.commit()

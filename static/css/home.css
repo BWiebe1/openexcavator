@@ -2,3 +2,9 @@
 	min-width: 140px;
 	text-align: left;
 }
+
+.message {
+  margin: 10px 10px;
+  color: #ff0000;
+  font-size: 14px;
+}

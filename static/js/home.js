@@ -178,29 +178,8 @@ $(document).ready(function() {
 	startAltitude = parseFloat($('#startAltitude').val());
 	stopAltitude = parseFloat($('#stopAltitude').val());
 	antennaHeight = parseFloat($('#antennaHeight').val());
-	path = JSON.parse($('#path').val())['features'];
+	path = JSON.parse($('#path').attr('data-text'))['features'];
 	initMap();
-	$('#saveChanges').click(function() {
-		  var data = {};
-		  data['gps_host'] = $('#gpsHost').val();
-		  data['gps_port'] = $('#gpsPort').val();
-		  data['start_altitude'] = $('#startAltitude').val();
-		  data['start_altitude'] = $('#startAltitude').val();
-		  data['stop_altitude'] = $('#stopAltitude').val();
-		  data['antenna_height'] = $('#antennaHeight').val();
-		  data['path'] = $('#path').val();
-		  data['_xsrf'] = getCookie("_xsrf");
-		  $.post('/update', data=data).done(function (data) {
-				if (data == 'OK') {
-					window.location.href = "/";
-				}
-				else {
-					alert('update failed: ' + data);
-				}
-		  }).fail(function() {
-				alert( "update failed" );
-		});
-	});
 });
 
 $(window).on( "load", function() {
