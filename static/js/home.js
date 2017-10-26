@@ -105,7 +105,7 @@ function initMap() {
 	var deltaAltitude = (stopAltitude-startAltitude) / (path.length - 1);
 	for (var i=0; i<path.length;i++) {
 		var coords = path[i].geometry.coordinates;
-		var circle = L.circle(new L.LatLng(coords[1], coords[0]), 2).addTo(myMap);
+		var circle = L.circle(new L.LatLng(coords[1], coords[0]), 1).addTo(myMap);
 		latlngs.push(new L.LatLng(coords[1], coords[0]));
 		projCoords = proj4(srcProj, dstProj, [coords[0], coords[1]]);
 		pointById[i] = {'lat': projCoords[1], 'lng': projCoords[0], 'alt': coords[2]};
@@ -175,9 +175,9 @@ function refreshPosition() {
 }
 
 $(document).ready(function() {
-	startAltitude = parseFloat($('#startAltitude').val());
-	stopAltitude = parseFloat($('#stopAltitude').val());
-	antennaHeight = parseFloat($('#antennaHeight').val());
+	startAltitude = parseFloat($('#start_altitude').val());
+	stopAltitude = parseFloat($('#stop_altitude').val());
+	antennaHeight = parseFloat($('#antenna_height').val());
 	path = JSON.parse($('#path').attr('data-text'))['features'];
 	initMap();
 });
