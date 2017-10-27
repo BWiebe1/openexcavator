@@ -78,6 +78,7 @@ class Reach(threading.Thread):
                 if not self.connection:
                     self.connection = socket.create_connection((self.host, self.port), 3)
                 data = self.connection.recv(256)
+                self._position = None
                 if not data:
                     raise Exception('no data received on socket for 3 seconds')
                 buffer += data.decode() #bytes to str
@@ -87,8 +88,10 @@ class Reach(threading.Thread):
                     buffer = buffer[marker+1:]
                     position = self.parse_nmea(message)
                     self._position = position
+                elif len(buffer) > 64000:
+                    logging.warning('no valid GPRMC data received, clearing buffer')
+                    buffer = ''
             except Exception as exc:
-                self._position = None
                 logging.warning('cannot update position data: %s, reconnecting', exc)
                 self.connection = None
                 time.sleep(3)

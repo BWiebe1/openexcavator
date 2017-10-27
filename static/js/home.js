@@ -143,15 +143,14 @@ function refreshPosition() {
 			$('#plng').html(data.lng.toFixed(8));
 			$('#pdir').html(data.heading);
 			var fix = data.fix;
-			$('#pacc').css('color', 'red');
 			if (data.fix === 1) {
 				fix = 'single';
-				$('#pacc').css('color', 'orange');
-			} else if (data.fix === 4){
-				$('#pacc').css('color', 'yellow');
-				fix = 'fix';
+				$('#pacc').css('color', 'red');
 			} else if (data.fix === 4){
 				$('#pacc').css('color', 'green');
+				fix = 'fix';
+			} else if (data.fix === 5){
+				$('#pacc').css('color', 'yellow');
 				fix = 'float';
 			}
 			$('#pacc').html(data.acc.toFixed(2) + '/' + fix);
