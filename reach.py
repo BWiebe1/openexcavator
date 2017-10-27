@@ -66,7 +66,7 @@ class Reach(threading.Thread):
             elif sentence.startswith('$GPGGA'):
                 parts = sentence.split(',')
                 position['alt'] = float(parts[9]) + float(parts[11])#meters
-
+                position['fix'] = float(parts[6])
         return position
 
 
@@ -86,9 +86,9 @@ class Reach(threading.Thread):
                     message = buffer[:marker+1]
                     buffer = buffer[marker+1:]
                     position = self.parse_nmea(message)
-                    if position:
-                        self._position = position
+                    self._position = position
             except Exception as exc:
+                self._position = None
                 logging.warning('cannot update position data: %s, reconnecting', exc)
                 self.connection = None
                 time.sleep(3)

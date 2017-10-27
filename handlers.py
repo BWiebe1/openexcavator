@@ -14,7 +14,7 @@ import database
 def json_encoder(obj):
     """Encode datetime.datetime objects using ISO format"""
     if isinstance(obj, datetime.datetime):
-        return obj.isoformat()
+        return obj.strftime('%H:%M:%S')
 
 
 class BaseHandler(tornado.web.RequestHandler):

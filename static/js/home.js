@@ -29,6 +29,13 @@ function pointToPointDistance(x1, y1, x2, y2) {
 	  return Math.sqrt(dx * dx + dy * dy); 
 }
 
+function slope3D(x1, y1, z1, x2, y2, z2) {
+	  var run = pointToPointDistance(x1, y1, x2, y2);
+	  var rise = z2 - z1;  
+	  return rise / run; 
+
+}
+
 function pointToSegmentDistance(x, y, x1, y1, x2, y2) {
 	  var A = x - x1;
 	  var B = y - y1;
@@ -71,7 +78,7 @@ function inverseDistanceWeight(x, y, x1, y1, v1, x2, y2, v2) {
 
 function getPolylineDistance(path, point) {
 	var minDist = 1000000;
-	var angleDif = 0;
+	var slope = 0;
 	var altDiff = 0;
 	var projCoords = proj4(srcProj, dstProj, [point.lng, point.lat]);
 	for (var i=0; i<path.length-1;i++) {
@@ -84,12 +91,13 @@ function getPolylineDistance(path, point) {
 		var dist = pointToSegmentDistance(projCoords[0], projCoords[1], c1.lng, c1.lat, c2.lng, c2.lat);
 		if (dist < minDist) {
 			minDist = dist;
+			slope = slope3D(c1.lng, c1.lat, c1.desiredAlt, c2.lng, c2.lat, c2.desiredAlt);
 			altDiff = inverseDistanceWeight(projCoords[0], projCoords[1], c1.lng, c1.lat, c1.desiredAlt, c2.lng, c2.lat, c2.desiredAlt);
 			altDiff = point.alt - antennaHeight - altDiff;
 			angleDif = angle - point.heading;
 		}
 	}
-	return [minDist, angleDif, altDiff];
+	return [minDist, slope, altDiff];
 }
 
 function initMap() {
@@ -133,13 +141,27 @@ function refreshPosition() {
 		try {
 			$('#plat').html(data.lat.toFixed(8));
 			$('#plng').html(data.lng.toFixed(8));
-			$('#palt').html(data.alt.toFixed(2));
 			$('#pdir').html(data.heading);
-			$('#pacc').html(data.acc.toFixed(2));
+			var fix = data.fix;
+			$('#pacc').css('color', 'red');
+			if (data.fix === 1) {
+				fix = 'single';
+				$('#pacc').css('color', 'orange');
+			} else if (data.fix === 4){
+				$('#pacc').css('color', 'yellow');
+				fix = 'fix';
+			} else if (data.fix === 4){
+				$('#pacc').css('color', 'green');
+				fix = 'float';
+			}
+			$('#pacc').html(data.acc.toFixed(2) + '/' + fix);
 			$('#ptim').html(data.ts);
 			var result = getPolylineDistance(path, data);
+			var slope = result[1] * 100;
+			$('#palt').html(data.alt.toFixed(2) + '/' + slope.toFixed(2) + '%');
 			$('#height').html(formatDelta(result[2]));
 			$('#distance').html(formatDelta(result[0]));
+			$('#ptim').css('color', 'black');
 			if (result[2] > 0) {
 				$('.fa-arrow-down').removeClass('text-muted');
 				$('.fa-arrow-down').addClass('text-success');
@@ -164,12 +186,14 @@ function refreshPosition() {
 			}
 		}
 		catch (err) {
+			$('#ptim').css('color', 'red');
 			console.log('cannot parse position data: ' + data + ', error: ' + err.message); 
 		}
 		setTimeout(refreshPosition, 1000);
 	})
 	.fail(function() {
-		alert( "cannot update position" );
+		$('#ptim').css('color', 'red');
+		console.log('cannot retrieve position data');
 		setTimeout(refreshPosition, 5000);
 	});
 }
