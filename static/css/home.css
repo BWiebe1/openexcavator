@@ -12,3 +12,7 @@
 .input-group span, .input-group input {
 	font-size: 80%
 }
+
+div.row p {
+	font-weight: bold;
+}

@@ -150,7 +150,7 @@ function refreshPosition() {
 				$('#pacc').css('color', 'green');
 				fix = 'fix';
 			} else if (data.fix === 5){
-				$('#pacc').css('color', 'yellow');
+				$('#pacc').css('color', '#CCCC00');
 				fix = 'float';
 			}
 			$('#pacc').html(data.acc.toFixed(2) + '/' + fix);

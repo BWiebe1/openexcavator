@@ -77,7 +77,7 @@ class Reach(threading.Thread):
             try:
                 if not self.connection:
                     self.connection = socket.create_connection((self.host, self.port), 3)
-                data = self.connection.recv(256)
+                data = self.connection.recv(4096)
                 if not data:
                     raise Exception('no data received on socket for 3 seconds')
                 buffer += data.decode() #bytes to str
