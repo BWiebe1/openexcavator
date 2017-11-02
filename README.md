@@ -41,6 +41,9 @@ server {
         }
         location /static/ {
             root /var/www/openexcavator;
+        	sendfile off;
+			tcp_nopush off;
+			tcp_nodelay on;
             access_log off;
         }
 }

@@ -9,6 +9,8 @@ var pointById = {};
 var startAltitude = null;
 var stopAltitude = null;
 var antennaHeight = null;
+var safetyHeight = null;
+var safetyDepth = null;
 var path = null;
 
 function getCookie(name) {
@@ -162,16 +164,18 @@ function refreshPosition() {
 			$('#distance').html(formatDelta(result[0]));
 			$('#ptim').css('color', 'black');
 			if (result[2] > 0) {
-				$('.fa-arrow-down').removeClass('text-muted');
-				$('.fa-arrow-down').addClass('text-success');
-				$('.fa-arrow-up').removeClass('text-success');
-				$('.fa-arrow-up').addClass('text-muted');
+				$('.fa-arrow-down').css('color', '#5cb85c!important');
+				$('.fa-arrow-up').css('color', '#868e96!important');
 			}
 			else {
-				$('.fa-arrow-down').removeClass('text-success');
-				$('.fa-arrow-down').addClass('text-muted');
-				$('.fa-arrow-up').removeClass('text-muted');
-				$('.fa-arrow-up').addClass('text-success');
+				$('.fa-arrow-up').css('color', '#5cb85c!important');
+				$('.fa-arrow-down').css('color', '#868e96!important');
+			}
+			if (data.alt - antennaHeight <= safetyDepth) {
+				$('.fa-arrow-down').css('color', '#d9534f!important');
+			}
+			if (data.alt >= safetyHeight) {
+				$('.fa-arrow-up').css('color', '#d9534f!important');
 			}
 			if (currentPosition === null) {
 				currentPosition = L.circle([data.lat, data.lng], data.acc).addTo(myMap);
@@ -201,6 +205,8 @@ $(document).ready(function() {
 	startAltitude = parseFloat($('#start_altitude').val());
 	stopAltitude = parseFloat($('#stop_altitude').val());
 	antennaHeight = parseFloat($('#antenna_height').val());
+	safetyHeight = parseFloat($('#safety_height').val());
+	safetyDepth = parseFloat($('#safety_depth').val());
 	path = JSON.parse($('#path').attr('data-text'))['features'];
 	initMap();
 });

@@ -16,3 +16,8 @@
 div.row p {
 	font-weight: bold;
 }
+
+
+p i {
+	color: #868e96!important;
+}

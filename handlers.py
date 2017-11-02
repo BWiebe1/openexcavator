@@ -73,6 +73,8 @@ class UpdateHandler(BaseHandler):
         start_altitude = self.get_argument('start_altitude', None)
         stop_altitude = self.get_argument('stop_altitude', None)
         antenna_height = self.get_argument('antenna_height', None)
+        safety_depth = self.get_argument('safety_depth', None)
+        safety_height = self.get_argument('safety_height', None)
         path = None
         if self.request.files:
             file_info = self.request.files['path'][0]
@@ -83,6 +85,8 @@ class UpdateHandler(BaseHandler):
             start_altitude = float(start_altitude)
             stop_altitude = float(stop_altitude)
             antenna_height = float(antenna_height)
+            safety_depth = float(safety_depth)
+            safety_height = float(safety_height)
             if path:
                 try:
                     pathvalue = json.loads(path)
@@ -95,6 +99,7 @@ class UpdateHandler(BaseHandler):
         if error_msg:
             return self.redirect('/?error_msg=' + tornado.escape.url_escape(error_msg))
         data = {'start_altitude': start_altitude, 'stop_altitude': stop_altitude, 'path': path,
-                'antenna_height': antenna_height, 'gps_host': gps_host, 'gps_port': gps_port}
+                'antenna_height': antenna_height, 'gps_host': gps_host, 'gps_port': gps_port,
+                'safety_height': safety_height, 'safety_depth': safety_depth}
         database.set_config(data)
         self.redirect('/')
