@@ -164,18 +164,18 @@ function refreshPosition() {
 			$('#distance').html(formatDelta(result[0]));
 			$('#ptim').css('color', 'black');
 			if (result[2] > 0) {
-				$('.fa-arrow-down').css('color', '#5cb85c!important');
-				$('.fa-arrow-up').css('color', '#868e96!important');
+				$('.fa-arrow-down').each(function () {this.style.setProperty('color' , '#5cb85c', 'important')});
+				$('.fa-arrow-up').each(function () {this.style.setProperty('color' , '#868e96', 'important')});
 			}
 			else {
-				$('.fa-arrow-up').css('color', '#5cb85c!important');
-				$('.fa-arrow-down').css('color', '#868e96!important');
+				$('.fa-arrow-up').each(function () {this.style.setProperty('color' , '#5cb85c', 'important')});
+				$('.fa-arrow-down').each(function () {this.style.setProperty('color' , '#868e96', 'important')});
 			}
 			if (data.alt - antennaHeight <= safetyDepth) {
-				$('.fa-arrow-down').css('color', '#d9534f!important');
+				$('.fa-arrow-up').each(function () {this.style.setProperty('color' , '#d9534f', 'important')});
 			}
 			if (data.alt >= safetyHeight) {
-				$('.fa-arrow-up').css('color', '#d9534f!important');
+				$('.fa-arrow-down').each(function () {this.style.setProperty('color' , '#d9534f', 'important')});
 			}
 			if (currentPosition === null) {
 				currentPosition = L.circle([data.lat, data.lng], data.acc).addTo(myMap);
