@@ -9,6 +9,7 @@ import json
 import tornado.web
 
 import database
+import utils
 
 
 def json_encoder(obj):
@@ -89,6 +90,8 @@ class UpdateHandler(BaseHandler):
             safety_height = float(safety_height)
             if path:
                 try:
+                    if file_info['filename'].endswith('.zip'):
+                        path = utils.extract_zip(path)
                     pathvalue = json.loads(path)
                     if not 'features' in pathvalue:
                         error_msg = 'missing features from GeoJSON'
