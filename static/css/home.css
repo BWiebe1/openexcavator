@@ -21,3 +21,12 @@ div.row p {
 p i {
 	color: #868e96!important;
 }
+
+html, body, .container {
+	height: 100%;
+	width: 100%;
+}
+
+.fill {
+    flex:1;
+}

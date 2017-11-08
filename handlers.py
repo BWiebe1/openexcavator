@@ -8,7 +8,6 @@ import datetime
 import json
 import tornado.web
 
-import database
 import utils
 
 
@@ -41,7 +40,7 @@ class HomeHandler(BaseHandler):
     """
 
     def get(self):
-        config = database.get_config()
+        config = self.application.database.get_config()
         error_msg = self.get_argument('error_msg', '')
         self.render('home.html', config=config, error_msg=error_msg)
 
@@ -53,13 +52,19 @@ class PositionHandler(BaseHandler):
     """
 
 
-    def initialize(self, gpsc):
-        self.gpsc = gpsc
+    def get(self):
+        position = self.application.gpsc.get_position()
+        response = json.dumps(position, default=json_encoder)
+        self.finish(response)
 
+
+class ToolsHandler(BaseHandler):
+    """
+    Handler for /tools request, renders tools.html
+    """
 
     def get(self):
-        response = json.dumps(self.gpsc.get_position(), default=json_encoder)
-        self.finish(response)
+        self.render('tools.html')
 
 
 class UpdateHandler(BaseHandler):
@@ -104,5 +109,5 @@ class UpdateHandler(BaseHandler):
         data = {'start_altitude': start_altitude, 'stop_altitude': stop_altitude, 'path': path,
                 'antenna_height': antenna_height, 'gps_host': gps_host, 'gps_port': gps_port,
                 'safety_height': safety_height, 'safety_depth': safety_depth}
-        database.set_config(data)
+        self.application.database.set_config(data)
         self.redirect('/')

@@ -35,22 +35,31 @@ def configure_signals():
     signal.signal(signal.SIGTERM, stopping_handler)
 
 
-if __name__ == "__main__":
-    configure_signals()
+def main():
+    """
+    Load database configuration, start GPS thread and main Tornado app
+    """
     config = database.get_config()
-    gpsc = Reach(config['gps_host'], int(config['gps_port']))
-    gpsc.start()
     application = tornado.web.Application(
         [
             (r"/", handlers.HomeHandler),
-            (r"/position", handlers.PositionHandler, {'gpsc': gpsc}),
-            (r"/update", handlers.UpdateHandler),
+            (r"/position", handlers.PositionHandler),
+            (r"/tools", handlers.ToolsHandler),
+            (r"/update", handlers.UpdateHandler)
         ],
         cookie_secret=settings.COOKIE_SECRET,
         xsrf_cookies=True,
         template_path=settings.TEMPLATE_PATH,
         static_path=settings.STATIC_PATH
     )
+    application.database = database
+    application.gpsc = Reach(config['gps_host'], int(config['gps_port']))
+    application.gpsc.start()
     logging.info('starting openexcavator on %s:%s ...', settings.ADDRESS, settings.PORT)
     application.listen(settings.PORT, address=settings.ADDRESS)
     tornado.ioloop.IOLoop.instance().start()
+
+
+if __name__ == "__main__":
+    configure_signals()
+    main()
