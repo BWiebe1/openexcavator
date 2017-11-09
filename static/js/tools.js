@@ -3,6 +3,7 @@ var currentPosition = null;
 var currentData = null;
 var startPosition = null;
 var startData = null;
+var polyline = null;
 
 function initMap() {
 	myMap = L.map('mapid').setView([53.58442963725551, -110.51799774169922], 18);
@@ -51,14 +52,23 @@ function refreshPosition() {
 		try {
 			setValuesData('current_', data);
 			if (startData !== null) {
+				var latlngs = [new L.LatLng(startData.lat, startData.lng), 
+					new L.LatLng(data.lat, data.lng)];
+				if (polyline === null) {
+					polyline = L.polyline(latlngs, {color: 'red'}).addTo(myMap);
+				}
+				else {
+					polyline.setLatLngs(latlngs);
+				}
 				projStartCoords = proj4(srcProj, dstProj, [startData.lng, startData.lat]);
-				projCurrentCoords = proj4(srcProj, dstProj, [currentData.lng, currentData.lat]);
-				var slope = slope3D(projStartCoords[0], projStartCoords[1], startData.alt,
-						projCurrentCoords[0], projCurrentCoords[1], currentData.alt);
+				projCoords = proj4(srcProj, dstProj, [data.lng, data.lat]);
+				var run = pointToPointDistance(projStartCoords[0], projStartCoords[1], projCoords[0], projCoords[1]);
+				var rise = data.alt - startData.alt;
+				$('#rise_run').html(rise.toFixed(2) + '/' + run.toFixed(2));
+				var slope = rise / run;
 				slope = slope * 100;
 				slope = slope.toFixed(2) + '%';
 				$('#slope').html(slope);
-				
 			}
 			if (currentPosition === null) {
 				currentPosition = L.circle([data.lat, data.lng], data.acc).addTo(myMap);
