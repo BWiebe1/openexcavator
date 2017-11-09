@@ -53,7 +53,6 @@ function refreshPosition() {
 		try {
 			$('#plat').html(data.lat.toFixed(8));
 			$('#plng').html(data.lng.toFixed(8));
-			$('#pdir').html(data.heading);
 			var fix = data.fix;
 			if (data.fix === 1) {
 				fix = 'single';
@@ -69,7 +68,9 @@ function refreshPosition() {
 			$('#ptim').html(data.ts);
 			var result = getPolylineDistance(path, data, pointById);
 			var slope = result[1] * 100;
-			$('#palt').html(data.alt.toFixed(2) + '/' + slope.toFixed(2) + '%');
+			$('#pslo').html(slope.toFixed(2) + ' %');
+			var bucketAlt =  data.alt - antennaHeight;
+			$('#palt').html(data.alt.toFixed(2) + '/' + bucketAlt.toFixed(2));
 			$('#height').html(formatDelta(result[2]));
 			$('#distance').html(formatDelta(result[0]));
 			$('#ptim').css('color', 'black');
@@ -89,8 +90,7 @@ function refreshPosition() {
 			}
 			if (currentPosition === null) {
 				currentPosition = L.circle([data.lat, data.lng], data.acc).addTo(myMap);
-				bounds = polyline.getBounds();
-				bounds.extend(new L.LatLng(data.lat, data.lng));
+				bounds.extend(currentPosition.getBounds());
 				myMap.fitBounds(bounds);
 			}
 			else {
