@@ -64,7 +64,8 @@ class ToolsHandler(BaseHandler):
     """
 
     def get(self):
-        self.render('tools.html')
+        config = self.application.database.get_config()
+        self.render('tools.html', config=config)
 
 
 class UpdateHandler(BaseHandler):

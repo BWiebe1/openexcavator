@@ -4,6 +4,7 @@ var currentData = null;
 var startPosition = null;
 var startData = null;
 var polyline = null;
+var antennaHeight = null;
 
 function initMap() {
 	myMap = L.map('mapid').setView([53.58442963725551, -110.51799774169922], 18);
@@ -20,6 +21,10 @@ function initMap() {
 			.setLatLng(e.latlng)
 			.setContent("You clicked the map at " + e.latlng.toString())
 		.openOn(myMap);
+	}
+	if (startData !== null) {
+		startPosition = L.circle([startData.lat, startData.lng], startData.acc).addTo(myMap);
+		startPosition.setStyle({fillColor: 'green', color: 'green'});
 	}
 	myMap.on('click', onMapClick);
 	myMap.invalidateSize();
@@ -42,7 +47,8 @@ function setValuesData(prefix, data) {
 	}
 	$('#' + prefix + 'acc').html(data.acc.toFixed(2) + '/' + fix);
 	$('#' + prefix + 'tim').html(data.ts);
-	$('#' + prefix + 'alt').html(data.alt.toFixed(2));
+	var value = data.alt - antennaHeight;
+	$('#' + prefix + 'alt').html(value.toFixed(2));
 	$('#' + prefix + 'tim').css('color', 'black');
 }
 
@@ -94,8 +100,14 @@ function refreshPosition() {
 }
 
 $(document).ready(function() {
+	antennaHeight = parseFloat($('#antenna_height').text());
+	if (sessionStorage.getItem("startData") !== null) {
+		startData = JSON.parse(sessionStorage.getItem("startData"));
+		setValuesData('start_', startData);
+	}
 	$('#mark').click(function(){
-		startData = JSON.parse(JSON.stringify(currentData));
+		startData = JSON.parse(JSON.stringify(currentData)); //"deep" copy for simple data
+		sessionStorage.setItem('startData', JSON.stringify(startData));
 		setValuesData('start_', startData);
 		if (startPosition === null) {
 			startPosition = L.circle([startData.lat, startData.lng], startData.acc).addTo(myMap);
