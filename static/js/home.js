@@ -21,6 +21,7 @@ function initMap() {
 			'Imagery © <a href="http://mapbox.com">Mapbox</a>',
 		id: 'mapbox.streets'
 		}).addTo(myMap);
+	L.control.scale().addTo(myMap);
 	var latlngs = [];
 	var deltaAltitude = (stopAltitude-startAltitude) / (path.length - 1);
 	for (var i=0; i<path.length;i++) {

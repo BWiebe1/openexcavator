@@ -15,6 +15,7 @@ function initMap() {
 			'Imagery © <a href="http://mapbox.com">Mapbox</a>',
 		id: 'mapbox.streets'
 		}).addTo(myMap);
+	L.control.scale().addTo(myMap);
 	var popup = L.popup();
 	function onMapClick(e) {
 		popup
