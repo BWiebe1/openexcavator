@@ -50,20 +50,20 @@ class Reach(threading.Thread):
         sentences = data.split('\n')
         position = {}
         for sentence in sentences:
-            if sentence.startswith('$GPRMC'):
+            if sentence.startswith('$GNRMC'):
                 parts = sentence.split(',')
                 if parts[2] != 'A':
-                    logging.warning('invalid GPRMC data: %s', sentence)
+                    logging.warning('invalid GNRMC data: %s', sentence)
                     continue
                 position['ts'] = datetime.datetime.strptime(parts[9]+parts[1][:6], '%d%m%y%H%M%S')
                 position['lat'] = self.parse_coordinate(parts[3], parts[4])
                 position['lng'] = self.parse_coordinate(parts[5], parts[6])
                 position['speed'] = float(parts[7]) * 1.852 #knots to km/h
-                position['heading'] = float(parts[8]) #0-360
-            elif sentence.startswith('$GPGST'):
+                #position['heading'] = float(parts[8]) #0-360
+            elif sentence.startswith('$GNGST'):
                 parts = sentence.split(',')
                 position['acc'] = max(float(parts[6]), float(parts[7])) #meters
-            elif sentence.startswith('$GPGGA'):
+            elif sentence.startswith('$GNGGA'):
                 parts = sentence.split(',')
                 position['alt'] = float(parts[9]) + float(parts[11])#meters
                 position['fix'] = float(parts[6])
@@ -81,7 +81,7 @@ class Reach(threading.Thread):
                 if not data:
                     raise Exception('no data received on socket for 3 seconds')
                 buffer += data.decode() #bytes to str
-                marker = buffer.find('\n$GPRMC')
+                marker = buffer.find('\n$GNRMC')
                 if marker > -1:
                     message = buffer[:marker+1]
                     buffer = buffer[marker+1:]
@@ -89,7 +89,7 @@ class Reach(threading.Thread):
                     position = self.parse_nmea(message)
                     self._position = position
                 elif len(buffer) > 64000:
-                    logging.warning('no valid GPRMC data received, clearing buffer')
+                    logging.warning('no valid GNRMC data received, clearing buffer')
                     self._position = None
                     buffer = ''
             except Exception as exc:

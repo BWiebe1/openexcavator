@@ -83,7 +83,7 @@ function getPolylineDistance(path, point, pointById) {
 			slope = slope3D(c1.lng, c1.lat, c1.desiredAlt, c2.lng, c2.lat, c2.desiredAlt);
 			altDiff = inverseDistanceWeight(projCoords[0], projCoords[1], c1.lng, c1.lat, c1.desiredAlt, c2.lng, c2.lat, c2.desiredAlt);
 			altDiff = point.alt - antennaHeight - altDiff;
-			angleDif = angle - point.heading;
+			//angleDif = angle - point.heading;
 		}
 	}
 	return [minDist, slope, altDiff];
