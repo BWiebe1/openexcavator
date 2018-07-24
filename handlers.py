@@ -76,6 +76,8 @@ class UpdateHandler(BaseHandler):
     def post(self):
         gps_host = self.get_argument("gps_host", None)
         gps_port = self.get_argument("gps_port", None)
+        imu_host = self.get_argument("imu_host", None)
+        imu_port = self.get_argument("imu_port", None)
         start_altitude = self.get_argument("start_altitude", None)
         stop_altitude = self.get_argument("stop_altitude", None)
         antenna_height = self.get_argument("antenna_height", None)
@@ -88,6 +90,7 @@ class UpdateHandler(BaseHandler):
         error_msg = None
         try:
             gps_port = int(gps_port)
+            imu_port = int(imu_port)            
             start_altitude = float(start_altitude)
             stop_altitude = float(stop_altitude)
             antenna_height = float(antenna_height)
@@ -108,6 +111,7 @@ class UpdateHandler(BaseHandler):
             return self.redirect("/?error_msg=" + tornado.escape.url_escape(error_msg))
         data = {"start_altitude": start_altitude, "stop_altitude": stop_altitude, "path": path,
                 "antenna_height": antenna_height, "gps_host": gps_host, "gps_port": gps_port,
+                "imu_host": imu_host, "imu_port": imu_port,
                 "safety_height": safety_height, "safety_depth": safety_depth}
         self.application.database.set_config(data)
         return self.redirect("/")

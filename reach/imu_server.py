@@ -50,6 +50,7 @@ class DummyDataServer(threading.Thread):
 class RTIMUServer(threading.Thread):
     """
     RTIMU thread implementation to be used in TCP server
+    see https://github.com/87yj/EmlidIMU/blob/master/Reach IMU setup.pdf to get RTIMU running
     """
 
 
@@ -81,6 +82,7 @@ class RTIMUServer(threading.Thread):
 
 
     def run(self):
+        self.setup_imu()
         while True:
             if self.imu.IMURead():
                 # x, y, z = imu.getFusionData()
