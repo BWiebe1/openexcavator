@@ -1,8 +1,8 @@
-'''
+"""
 Created on Oct 11, 2017
 
 @author: ionut
-'''
+"""
 
 import logging
 import signal
@@ -28,7 +28,7 @@ def configure_signals():
     def stopping_handler(signum, frame):
         """Handle signal and exit"""
         frame_data = format_frame(frame)
-        logging.info('interrupt signal %s, frame %s received, stopping', signum, frame_data)
+        logging.info("interrupt signal %s, frame %s received, stopping", signum, frame_data)
         app_exit()
 
     signal.signal(signal.SIGINT, stopping_handler)
@@ -53,9 +53,9 @@ def main():
         static_path=settings.STATIC_PATH
     )
     application.database = database
-    application.gpsc = Reach(config['gps_host'], int(config['gps_port']))
+    application.gpsc = Reach(config["gps_host"], int(config["gps_port"]))
     application.gpsc.start()
-    logging.info('starting openexcavator on %s:%s ...', settings.ADDRESS, settings.PORT)
+    logging.info("starting openexcavator on %s:%s ...", settings.ADDRESS, settings.PORT)
     application.listen(settings.PORT, address=settings.ADDRESS)
     tornado.ioloop.IOLoop.instance().start()
 

@@ -4,8 +4,21 @@ Created on Oct 11, 2017
 @author: ionut
 '''
 
+import datetime
 import io
 import zipfile
+
+
+def json_encoder(obj):
+    """
+    Encode datetime.datetime objects using time-only HMS format
+    :param obj: object to encode
+    :return: date
+    """
+    if isinstance(obj, datetime.datetime):
+        return obj.strftime("%H:%M:%S")
+    return obj
+
 
 def format_frame(frame):
     """
