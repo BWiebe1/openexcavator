@@ -11,45 +11,8 @@ var safetyHeight = null;
 var safetyDepth = null;
 var path = null;
 
-
-function initMap() {
-	myMap = L.map('mapid').setView([53.58442963725551, -110.51799774169922], 18);
-	L.tileLayer('https://api.tiles.mapbox.com/v4/{id}/{z}/{x}/{y}.png?access_token=pk.eyJ1IjoibWFwYm94IiwiYSI6ImNpejY4NXVycTA2emYycXBndHRqcmZ3N3gifQ.rJcFIG214AriISLbB6B5aw', {
-		maxZoom: 22,
-		attribution: 'Map data &copy; <a href="http://openstreetmap.org">OpenStreetMap</a> contributors, ' +
-			'<a href="http://creativecommons.org/licenses/by-sa/2.0/">CC-BY-SA</a>, ' +
-			'Imagery © <a href="http://mapbox.com">Mapbox</a>',
-		id: 'mapbox.streets'
-		}).addTo(myMap);
-	L.control.scale().addTo(myMap);
-	var latlngs = [];
-	var deltaAltitude = (stopAltitude-startAltitude) / (path.length - 1);
-	for (var i=0; i<path.length;i++) {
-		var coords = path[i].geometry.coordinates;
-		var circle = L.circle(new L.LatLng(coords[1], coords[0]), 1).addTo(myMap);
-		latlngs.push(new L.LatLng(coords[1], coords[0]));
-		projCoords = proj4(srcProj, dstProj, [coords[0], coords[1]]);
-		pointById[i] = {'lat': projCoords[1], 'lng': projCoords[0], 'alt': coords[2]};
-		pointById[i].desiredAlt = startAltitude + i * deltaAltitude;
-		pointById[i].circle = circle;
-	}
-	polyline = L.polyline(latlngs, {color: 'red'}).addTo(myMap);
-	bounds = polyline.getBounds()
-	myMap.fitBounds(bounds);
-	var popup = L.popup();
-	function onMapClick(e) {
-		popup
-			.setLatLng(e.latlng)
-			.setContent("You clicked the map at " + e.latlng.toString())
-		.openOn(myMap);
-	}
-	myMap.on('click', onMapClick);
-	myMap.invalidateSize();
-	refreshPosition();
-}
-
-function refreshPosition() {
-	var jqxhr = $.get( "/position").done(function (data) {
+function refreshData() {
+	var jqxhr = $.get( "/data").done(function (data) {
 		var data = JSON.parse(data);
 		try {
 			$('#plat').html(data.lat.toFixed(8));
@@ -103,13 +66,49 @@ function refreshPosition() {
 			$('#ptim').css('color', 'red');
 			console.log('cannot parse position data: ' + data + ', error: ' + err.message); 
 		}
-		setTimeout(refreshPosition, 1000);
+		setTimeout(refreshData, 1000);
 	})
 	.fail(function() {
 		$('#ptim').css('color', 'red');
-		console.log('cannot retrieve position data');
-		setTimeout(refreshPosition, 5000);
+		console.log('cannot retrieve data');
+		setTimeout(refreshData, 5000);
 	});
+}
+
+function initMap() {
+	myMap = L.map('mapid').setView([53.58442963725551, -110.51799774169922], 18);
+	L.tileLayer('https://api.tiles.mapbox.com/v4/{id}/{z}/{x}/{y}.png?access_token=pk.eyJ1IjoibWFwYm94IiwiYSI6ImNpejY4NXVycTA2emYycXBndHRqcmZ3N3gifQ.rJcFIG214AriISLbB6B5aw', {
+		maxZoom: 22,
+		attribution: 'Map data &copy; <a href="http://openstreetmap.org">OpenStreetMap</a> contributors, ' +
+			'<a href="http://creativecommons.org/licenses/by-sa/2.0/">CC-BY-SA</a>, ' +
+			'Imagery © <a href="http://mapbox.com">Mapbox</a>',
+		id: 'mapbox.streets'
+		}).addTo(myMap);
+	L.control.scale().addTo(myMap);
+	var latlngs = [];
+	var deltaAltitude = (stopAltitude-startAltitude) / (path.length - 1);
+	for (var i=0; i<path.length;i++) {
+		var coords = path[i].geometry.coordinates;
+		var circle = L.circle(new L.LatLng(coords[1], coords[0]), 1).addTo(myMap);
+		latlngs.push(new L.LatLng(coords[1], coords[0]));
+		projCoords = proj4(srcProj, dstProj, [coords[0], coords[1]]);
+		pointById[i] = {'lat': projCoords[1], 'lng': projCoords[0], 'alt': coords[2]};
+		pointById[i].desiredAlt = startAltitude + i * deltaAltitude;
+		pointById[i].circle = circle;
+	}
+	polyline = L.polyline(latlngs, {color: 'red'}).addTo(myMap);
+	bounds = polyline.getBounds()
+	myMap.fitBounds(bounds);
+	var popup = L.popup();
+	function onMapClick(e) {
+		popup
+			.setLatLng(e.latlng)
+			.setContent("You clicked the map at " + e.latlng.toString())
+		.openOn(myMap);
+	}
+	myMap.on('click', onMapClick);
+	myMap.invalidateSize();
+	refreshData();
 }
 
 $(document).ready(function() {

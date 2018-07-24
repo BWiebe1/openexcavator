@@ -38,16 +38,22 @@ class HomeHandler(BaseHandler):
         self.render("home.html", config=config, error_msg=error_msg)
 
 
-class PositionHandler(BaseHandler):
+class DataHandler(BaseHandler):
     """
     Handler for async /position request.
-    Get the data from the GPS thread and return JSON encoded position
+    Get the data from the GPS and IMU threads and return JSON encoded position
     """
 
 
     def get(self):
-        position = self.application.gpsc.get_position()
-        response = json.dumps(position, default=utils.json_encoder)
+        data = {}
+        position = self.application.gps_client.get_data()
+        if position:
+            data.update(position)
+        angles = self.application.imu_client.get_data()
+        if angles:
+            data.update(angles)
+        response = json.dumps(data, default=utils.json_encoder)
         self.finish(response)
 
 

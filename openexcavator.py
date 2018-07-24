@@ -12,7 +12,8 @@ import tornado.web
 import database
 import handlers
 import settings
-from reach import Reach
+from reach.gps import ReachGPS
+from reach.imu import ReachIMU
 from utils import format_frame
 
 
@@ -43,7 +44,7 @@ def main():
     application = tornado.web.Application(
         [
             (r"/", handlers.HomeHandler),
-            (r"/position", handlers.PositionHandler),
+            (r"/data", handlers.DataHandler),
             (r"/tools", handlers.ToolsHandler),
             (r"/update", handlers.UpdateHandler)
         ],
@@ -53,8 +54,10 @@ def main():
         static_path=settings.STATIC_PATH
     )
     application.database = database
-    application.gpsc = Reach(config["gps_host"], int(config["gps_port"]))
-    application.gpsc.start()
+    application.gps_client = ReachGPS(config["gps_host"], int(config["gps_port"]))
+    application.gps_client.start()
+    application.imu_client = ReachIMU(config["imu_host"], int(config["imu_port"]))
+    application.imu_client.start()
     logging.info("starting openexcavator on %s:%s ...", settings.ADDRESS, settings.PORT)
     application.listen(settings.PORT, address=settings.ADDRESS)
     tornado.ioloop.IOLoop.instance().start()

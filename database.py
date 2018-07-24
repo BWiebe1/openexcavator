@@ -54,13 +54,15 @@ def populate_config():
     data = [
         ('gps_host', '127.0.0.1'),
         ('gps_port', '9000'),
+        ('imu_host', '127.0.0.1'),
+        ('imu_port', '7000'),
         ('start_altitude', '700'),
         ('stop_altitude', '800'),
         ('antenna_height', '10'),
         ('safety_depth', '690'),
         ('safety_height', '810'),
         ('path', '''{
-            'type', "FeatureCollection",
+            "type": "FeatureCollection",
             "crs": { "type": "name", "properties": { "name": "urn:ogc:def:crs:OGC:1.3:CRS84" } },
                                                                                             
             "features": [
