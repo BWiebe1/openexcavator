@@ -1,8 +1,8 @@
-'''
+"""
 Created on Oct 11, 2017
 
 @author: ionut
-'''
+"""
 
 import datetime
 import io
@@ -26,9 +26,9 @@ def format_frame(frame):
     :param frame: frame object
     :returns: string representation
     """
-    buf = ''
+    buf = ""
     for key, value in frame.f_locals.items():
-        buf += '\t%s -> %s\n' % (key, value)
+        buf += "\t%s -> %s\n" % (key, value)
     return buf
 
 

@@ -19,7 +19,7 @@ from utils import format_frame
 
 def app_exit():
     """Execute cleanup and exit"""
-    logging.info('finished')
+    logging.info("finished")
     tornado.ioloop.IOLoop.instance().stop()
 
 
