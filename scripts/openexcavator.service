@@ -8,7 +8,7 @@ Group=www-data
 RestartSec=3
 Restart=always
 WorkingDirectory=/var/www/openexcavator
-ExecStart=/usr/bin/python openexcavator.py
+ExecStart=/usr/bin/python3 openexcavator.py
 
 [Install]
 WantedBy=default.target

@@ -6,6 +6,7 @@ Created on Oct 11, 2017
 
 import logging
 import signal
+import sys
 import tornado.ioloop
 import tornado.web
 
@@ -21,6 +22,7 @@ def app_exit():
     """Execute cleanup and exit"""
     logging.info("finished")
     tornado.ioloop.IOLoop.instance().stop()
+    sys.exit()
 
 
 def configure_signals():
