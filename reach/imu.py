@@ -4,6 +4,7 @@ Created on Jul 24, 2018
 @author: ionut
 """
 
+import json
 from reach.base import Reach
 
 
@@ -20,12 +21,13 @@ class ReachIMU(Reach):
 
 
     def parse_data(self, data):
-        sentences = data.split("\n")
+        sentences = data.strip().split("\n")
         data = {}
         if sentences:
             sentence = sentences[-1] #use most recent data
-            parts = sentence.split(",")
-            data["roll"] = float(parts[0])
-            data["pitch"] = float(parts[1])
-            data["yaw"] = float(parts[2])
+            imu_data = json.loads(sentence)
+            data["roll"] = imu_data["r"]
+            data["pitch"] = imu_data["p"]
+            data["yaw"] = imu_data["y"]
+            data["imu_time"] = imu_data["t"]
         return data
