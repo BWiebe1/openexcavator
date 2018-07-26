@@ -12,9 +12,13 @@ var safetyDepth = null;
 var path = null;
 
 function refreshData() {
-	var jqxhr = $.get( "/data").done(function (data) {
-		var data = JSON.parse(data);
+	var jqxhr = $.get( "/data").done(function (raw_data) {
+		var data = JSON.parse(raw_data);
 		try {
+			var result = getNewPositionRPY(data.lng, data.lat, data.alt, antennaHeight, data.roll, data.pitch, data.yaw);
+			data.lng = result[0];
+			data.lat = result[1];
+			data.alt = result[2];
 			$('#plat').html(data.lat.toFixed(8));
 			$('#plng').html(data.lng.toFixed(8));
 			var fix = data.fix;
