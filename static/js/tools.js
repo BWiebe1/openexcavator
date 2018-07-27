@@ -54,7 +54,7 @@ function setValuesData(prefix, data) {
 }
 
 function refreshPosition() {
-	var jqxhr = $.get( "/position").done(function (data) {
+	var jqxhr = $.get( "/data").done(function (data) {
 		var data = JSON.parse(data);
 		try {
 			setValuesData('current_', data);

@@ -21,6 +21,7 @@ function refreshData() {
 			data.alt = result[2];
 			$('#plat').html(data.lat.toFixed(8));
 			$('#plng').html(data.lng.toFixed(8));
+			$('#rpy').html("r/p/y: " + data.roll.toFixed(2) + "/" + data.pitch.toFixed(2) + "/" + data.yaw.toFixed(2));
 			var fix = data.fix;
 			if (data.fix === 1) {
 				fix = 'single';
@@ -112,6 +113,7 @@ function initMap() {
 	}
 	myMap.on('click', onMapClick);
 	myMap.invalidateSize();
+	$("#map_wrapper").append('<div id="rpy" style="position: relative; top: 5px; right 5px; z-index: 99">r/p/y:0/0/0</div>');
 	refreshData();
 }
 
