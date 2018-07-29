@@ -48,3 +48,9 @@ server {
         }
 }
 ```
+
+### IMU
+To integrate the IMU data as well, you need to install the applications from the `scripts` folder.  
+First install the Emlid IMU package from `https://github.com/87yj/EmlidIMU/` by following the instructions from the `Reach IMU setup.pdf` document.  
+Afterwards copy the Python scripts (`imu_reader.py` and `imu_server.py`) into the destination folder `/imu/RTIMULib2/Linux/python/tests` and copy the systemd service definitions (`imu_reader.service` and `imu_server.service`) to `/etc/systemd/system/`.  
+You can now enable and start the services after which you should see IMU data (roll, pitch and yaw) in the web application (make sure the IMU host and port settings in the web application point to the correct host).
