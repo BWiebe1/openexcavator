@@ -94,11 +94,10 @@ function toRadians(angle) {
 }
 
 function getNewPositionRPY(lng, lat, alt, dist, roll, pitch, yaw) {
-	//https://stackoverflow.com/questions/33984877/given-point-a-angles-and-length-to-point-b-calculate-point-b
 	var projCoords = proj4(srcProj, dstProj, [lng, lat]);
-	var x1 = projCoords[0] + dist * Math.cos(toRadians(roll)) * Math.sin(toRadians(90-pitch));
-	var y1 = projCoords[1] + dist * Math.sin(toRadians(roll));
-	var z1 = alt + dist * Math.cos(toRadians(roll)) * Math.cos(toRadians(90-pitch));
+	var x1 = projCoords[0] + dist * Math.cos(toRadians(pitch)) * Math.sin(toRadians(yaw));
+	var y1 = projCoords[1] + dist * Math.cos(toRadians(pitch)) * Math.cos(toRadians(yaw));
+	var z1 = alt - dist * Math.cos(toRadians(pitch)); //see pendulum motion
 	projCoords = proj4(dstProj, srcProj, [x1, y1]);
 	return [projCoords[0], projCoords[1], z1];
 }
