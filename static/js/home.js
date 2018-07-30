@@ -15,10 +15,12 @@ function refreshData() {
 	var jqxhr = $.get( "/data").done(function (raw_data) {
 		var data = JSON.parse(raw_data);
 		try {
+			var gpsAlt = data.alt;
 			var result = getNewPositionRPY(data.lng, data.lat, data.alt, antennaHeight, data.roll, data.pitch, data.yaw);
 			data.lng = result[0];
 			data.lat = result[1];
 			data.alt = result[2];
+			var bucketAlt = result[2];
 			$('#plat').html(data.lat.toFixed(8));
 			$('#plng').html(data.lng.toFixed(8));
 			$('#rpy').html("r/p/y: " + data.roll.toFixed(2) + "/" + data.pitch.toFixed(2) + "/" + data.yaw.toFixed(2));
@@ -39,7 +41,7 @@ function refreshData() {
 			var slope = result[1] * 100;
 			$('#pslo').html(slope.toFixed(2) + ' %');
 			var bucketAlt =  data.alt - antennaHeight;
-			$('#palt').html(data.alt.toFixed(2) + '/' + bucketAlt.toFixed(2));
+			$('#palt').html(gpsAlt.toFixed(2) + '/' + bucketAlt.toFixed(2));
 			$('#height').html(formatDelta(result[2]));
 			$('#distance').html(formatDelta(result[0]));
 			$('#ptim').css('color', 'black');
@@ -51,10 +53,10 @@ function refreshData() {
 				$('.fa-arrow-up').each(function () {this.style.setProperty('color' , '#5cb85c', 'important')});
 				$('.fa-arrow-down').each(function () {this.style.setProperty('color' , '#868e96', 'important')});
 			}
-			if (data.alt - antennaHeight <= safetyDepth) {
+			if (bucketAlt <= safetyDepth) {
 				$('.fa-arrow-up').each(function () {this.style.setProperty('color' , '#d9534f', 'important')});
 			}
-			if (data.alt >= safetyHeight) {
+			if (bucketAlt + antennaHeight >= safetyHeight) {
 				$('.fa-arrow-down').each(function () {this.style.setProperty('color' , '#d9534f', 'important')});
 			}
 			if (currentPosition === null) {
