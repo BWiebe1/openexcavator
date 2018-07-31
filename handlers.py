@@ -5,6 +5,8 @@ Created on Aug 28, 2017
 """
 
 import json
+import logging
+import subprocess
 import tornado.web
 
 import utils
@@ -74,6 +76,16 @@ class UpdateHandler(BaseHandler):
 
 
     def post(self):
+        action = self.get_argument("action", "").lower()
+        if action == "restart":
+            try:
+                logging.info("systemctl action %s openexcavator", action)
+                subprocess.check_output(["sudo", "systemctl", action, "openexcavator"],
+                                        stderr=subprocess.STDOUT)
+            except Exception as exc:
+                logging.warning("systemctl: %s", exc)
+            return self.render("restart.html", error_message=None)
+
         gps_host = self.get_argument("gps_host", None)
         gps_port = self.get_argument("gps_port", None)
         imu_host = self.get_argument("imu_host", None)
@@ -90,7 +102,7 @@ class UpdateHandler(BaseHandler):
         error_msg = None
         try:
             gps_port = int(gps_port)
-            imu_port = int(imu_port)            
+            imu_port = int(imu_port)
             start_altitude = float(start_altitude)
             stop_altitude = float(stop_altitude)
             antenna_height = float(antenna_height)

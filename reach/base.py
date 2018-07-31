@@ -54,11 +54,13 @@ class Reach(threading.Thread):
                     data = self.parse_data(message)
                     self._data = data
                 elif len(buffer) > self.tcp_buf_len:
-                    logging.warning("no valid GNRMC data received, clearing buffer")
+                    logging.warning("no valid GNRMC/IMU data received from %s:%s, clearing buffer",
+                                    self.host, self.port)
                     self._data = None
                     buffer = ""
             except Exception as exc:
-                logging.error("cannot update data: %s, reconnecting", exc)
+                logging.error("cannot update data: %s, reconnecting to %s:%s", exc,
+                              self.host, self.port)
                 self.connection = None
                 time.sleep(3)
             time.sleep(0.1)

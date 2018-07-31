@@ -74,7 +74,8 @@
 		      </div>
 		      <div class="modal-footer">
 		        <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
-		        <button type="submit" class="btn btn-primary" id="saveChanges">Save changes</button>
+		        <button type="submit" class="btn btn-primary" name="action" value="save">Save changes</button>
+		        <button type="submit" class="btn btn-primary" name="action" value="restart">Restart</button>
 		      </div>
 	      </form>
 	    </div>
@@ -106,16 +107,16 @@
 		</div>
 		<div class="row">
 			<div class="col-4 border border-primary">
-				Slope: <br>
-				<p id="pslo" class="text-center">0</p>
+				Slope: <span id="pslo" class="text-center">0</span><br>
+				Clock: <span id="ptim" class="text-center">0</span>
 			</div>
 			<div class="col-4 border border-primary">
 				Accuracy/Quality: <br>
 				<p id="pacc" class="text-center">0</p>
 			</div>
 			<div class="col-4 border border-primary">
-				Clock: <br>
-				<p id="ptim" class="text-center">0</p>
+				Roll/Pitch/Yaw:<br>
+ 				<p id="rpy" class="text-center">0/0/0</p>				
 			</div>
 		</div>
 		<div class="row">

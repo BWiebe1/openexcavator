@@ -16,14 +16,27 @@ function refreshData() {
 		var data = JSON.parse(raw_data);
 		try {
 			var gpsAlt = data.alt;
-			var result = getNewPositionRPY(data.lng, data.lat, data.alt, antennaHeight, data.roll, data.pitch, data.yaw);
-			data.lng = result[0];
-			data.lat = result[1];
-			data.alt = result[2];
-			var bucketAlt = result[2];
+			var bucketAlt = data.alt - antennaHeight;
+			if (data.pitch === undefined || data.yaw == undefined) {
+				$('#rpy').html("not available");
+			}
+			else {
+				$('#rpy').html(data.roll.toFixed(2) + "/" + data.pitch.toFixed(2) + "/" + data.yaw.toFixed(2));
+				var result = getNewPositionRPY(data.lng, data.lat, data.alt, antennaHeight, data.roll, data.pitch, data.yaw);
+				data.lng = result[0];
+				data.lat = result[1];
+				data.alt = result[2];
+				bucketAlt = result[2];
+				var dt = new Date();
+				if (dt.getTime() - data.imu_tim * 1000 > 3) {
+					$('#rpy').css("color", "red");
+				}
+				else {
+					$('#rpy').css("color", "black");
+				}
+			}
 			$('#plat').html(data.lat.toFixed(8));
 			$('#plng').html(data.lng.toFixed(8));
-			$('#rpy').html("r/p/y: " + data.roll.toFixed(2) + "/" + data.pitch.toFixed(2) + "/" + data.yaw.toFixed(2));
 			var fix = data.fix;
 			if (data.fix === 1) {
 				fix = 'single';
@@ -39,8 +52,7 @@ function refreshData() {
 			$('#ptim').html(data.ts);
 			var result = getPolylineDistance(path, data, pointById);
 			var slope = result[1] * 100;
-			$('#pslo').html(slope.toFixed(2) + ' %');
-			var bucketAlt =  data.alt - antennaHeight;
+			$('#pslo').html(slope.toFixed(2) + '%');
 			$('#palt').html(gpsAlt.toFixed(2) + '/' + bucketAlt.toFixed(2));
 			$('#height').html(formatDelta(result[2]));
 			$('#distance').html(formatDelta(result[0]));
@@ -115,7 +127,6 @@ function initMap() {
 	}
 	myMap.on('click', onMapClick);
 	myMap.invalidateSize();
-	$("#map_wrapper").append('<div id="rpy" style="position: relative; top: 5px; right 5px; z-index: 99">r/p/y:0/0/0</div>');
 	refreshData();
 }
 

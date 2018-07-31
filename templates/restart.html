@@ -1,0 +1,13 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<title>Redirecting to homepage</title>
+		<meta http-equiv="refresh" content="5;url=/" />
+	</head>
+	<body>
+		<p>The application is being restarted; you will be redirected automatically in 5 seconds.</p>
+		 {% if error_message %}
+            <p style="color: red">{{error_message}}</p>
+         {% end %}
+	</body>
+</html>
