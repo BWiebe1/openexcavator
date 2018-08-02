@@ -16,9 +16,9 @@ function refreshData() {
 		var data = JSON.parse(raw_data);
 		try {
 			var gpsAlt = data.alt;
-			var bucketAlt = data.alt - antennaHeight;
 			if (data.pitch === undefined || data.yaw == undefined) {
 				$('#rpy').html("not available");
+				data.alt = data.alt - antennaHeight;
 			}
 			else {
 				$('#rpy').html(data.roll.toFixed(2) + "/" + data.pitch.toFixed(2) + "/" + data.yaw.toFixed(2));
@@ -26,7 +26,6 @@ function refreshData() {
 				data.lng = result[0];
 				data.lat = result[1];
 				data.alt = result[2];
-				bucketAlt = result[2];
 				var dt = new Date();
 				if (dt.getTime() - data.imu_tim * 1000 > 3) {
 					$('#rpy').css("color", "red");
@@ -53,7 +52,7 @@ function refreshData() {
 			var result = getPolylineDistance(path, data, pointById);
 			var slope = result[1] * 100;
 			$('#pslo').html(slope.toFixed(2) + '%');
-			$('#palt').html(gpsAlt.toFixed(2) + '/' + bucketAlt.toFixed(2));
+			$('#palt').html(gpsAlt.toFixed(2) + '/' + data.alt.toFixed(2));
 			$('#height').html(formatDelta(result[2]));
 			$('#distance').html(formatDelta(result[0]));
 			$('#ptim').css('color', 'black');
@@ -65,10 +64,10 @@ function refreshData() {
 				$('.fa-arrow-up').each(function () {this.style.setProperty('color' , '#5cb85c', 'important')});
 				$('.fa-arrow-down').each(function () {this.style.setProperty('color' , '#868e96', 'important')});
 			}
-			if (bucketAlt <= safetyDepth) {
+			if (data.alt <= safetyDepth) {
 				$('.fa-arrow-up').each(function () {this.style.setProperty('color' , '#d9534f', 'important')});
 			}
-			if (bucketAlt + antennaHeight >= safetyHeight) {
+			if (data.alt + antennaHeight >= safetyHeight) {
 				$('.fa-arrow-down').each(function () {this.style.setProperty('color' , '#d9534f', 'important')});
 			}
 			if (currentPosition === null) {
