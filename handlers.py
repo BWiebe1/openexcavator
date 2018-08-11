@@ -112,7 +112,7 @@ class UpdateHandler(BaseHandler):
                 try:
                     if file_info["filename"].endswith(".zip"):
                         path = utils.extract_zip(path)
-                    pathvalue = json.loads(path)
+                    pathvalue = json.loads(path.decode())
                     if not "features" in pathvalue:
                         error_msg = "missing features from GeoJSON"
                 except ValueError:
