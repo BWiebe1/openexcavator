@@ -1,3 +1,4 @@
+window.utmZone = {"num": undefined, "letter": undefined}; //make sure we use the same UTM zone for all data
 var myMap = null;
 var currentPosition = null;
 var currentData = null;
@@ -67,9 +68,14 @@ function refreshPosition() {
 				else {
 					polyline.setLatLngs(latlngs);
 				}
-				projStartCoords = proj4(srcProj, dstProj, [startData.lng, startData.lat]);
-				projCoords = proj4(srcProj, dstProj, [data.lng, data.lat]);
-				var run = pointToPointDistance(projStartCoords[0], projStartCoords[1], projCoords[0], projCoords[1]);
+				if (utmZone.num === undefined) {
+					var aux = fromLatLon(startData.lat, startData.lng);
+					utmZone.num = aux.zoneNum;
+					utmZone.letter = aux.zoneLetter;
+				}
+				projStartCoords = fromLatLon(startData.lat, startData.lng, utmZone.num);startData.alt
+				projCoords = fromLatLon(data.lat, data.lng, utmZone.num);data.alt
+				var run = pointToPointDistance(projStartCoords.easting, projStartCoords.northing, 0, projCoords.easting, projCoords.northing, 0);
 				var rise = data.alt - startData.alt;
 				$('#rise_run').html(rise.toFixed(2) + '/' + run.toFixed(2));
 				var slope = rise / run;
