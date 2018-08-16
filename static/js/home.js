@@ -1,15 +1,16 @@
-
+window.utmZone = {"num": undefined, "letter": undefined}; //make sure we use the same UTM zone for all data
 var myMap = null;
 var currentPosition = null;
 var bounds = null;
 var polyline = null;
-var pointById = {};
+var pointById = {}; //holds points in UTM coordinate system
 var startAltitude = null;
 var stopAltitude = null;
 var antennaHeight = null;
 var safetyHeight = null;
 var safetyDepth = null;
 var path = null;
+
 
 function refreshData() {
 	var jqxhr = $.get( "/data").done(function (raw_data) {
@@ -109,8 +110,13 @@ function initMap() {
 		var coords = path[i].geometry.coordinates;
 		var circle = L.circle(new L.LatLng(coords[1], coords[0]), 1).addTo(myMap);
 		latlngs.push(new L.LatLng(coords[1], coords[0]));
-		projCoords = proj4(srcProj, dstProj, [coords[0], coords[1]]);
-		pointById[i] = {'lat': projCoords[1], 'lng': projCoords[0], 'alt': coords[2]};
+		if (utmZone.num === undefined) {
+			var aux = fromLatLon(coords[1], coords[0]);
+			utmZone.num = aux.zoneNum;
+			utmZone.letter = aux.zoneLetter;
+		}
+		pointById[i] = fromLatLon(coords[1], coords[0], utmZone.num);
+		pointById[i].altitude = coords[2];
 		pointById[i].desiredAlt = startAltitude + i * deltaAltitude;
 		pointById[i].circle = circle;
 	}
