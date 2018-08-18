@@ -103,8 +103,8 @@ function getPolylineDistance(path, point, pointById) {
 function getNewPositionRPY(lng, lat, alt, dist, roll, pitch, yaw) {
 	var projCoords = fromLatLon(lat, lng, utmZone.num);
 	projCoords.altitude = alt;
-	var x1 = projCoords.easting + dist * Math.cos(toRadians(pitch)) * Math.sin(toRadians(yaw));
-	var y1 = projCoords.northing + dist * Math.cos(toRadians(pitch)) * Math.cos(toRadians(yaw));
+	var x1 = projCoords.easting + dist * Math.sin(toRadians(pitch)) * Math.sin(toRadians(yaw));
+	var y1 = projCoords.northing + dist * Math.sin(toRadians(pitch)) * Math.cos(toRadians(yaw));
 	var z1 = projCoords.altitude - dist * Math.cos(toRadians(pitch)); //see pendulum motion
 	projCoords = toLatLon(x1, y1, projCoords.zoneNum, projCoords.zoneLetter);
 	return [projCoords.longitude, projCoords.latitude, z1];
