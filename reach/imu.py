@@ -21,11 +21,13 @@ class ReachIMU(Reach):
 
 
     def parse_data(self, data):
-        sentences = data.strip().split("\n")
+        sentences = data.split("\n")
         data = {}
-        if sentences:
-            sentence = sentences[-1] #use most recent data
-            imu_data = json.loads(sentence)
+        for sentence in sentences:
+            try:
+                imu_data = json.loads(sentence.strip())
+            except:
+                continue
             data["roll"] = imu_data["r"]
             data["pitch"] = imu_data["p"]
             data["yaw"] = imu_data["y"]

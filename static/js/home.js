@@ -28,7 +28,7 @@ function refreshData() {
 				data.lat = result[1];
 				data.alt = result[2];
 				var dt = new Date();
-				if (dt.getTime() - data.imu_tim * 1000 > 3) {
+				if (dt.getTime()/1000 - data.imu_time > 3) {
 					$('#rpy').css("color", "red");
 				}
 				else {
