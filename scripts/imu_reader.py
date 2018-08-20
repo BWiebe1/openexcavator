@@ -12,7 +12,7 @@ import math
 import sys
 import time
 
-sys.path.append('.')
+sys.path.append(".")
 import RTIMU
 
 logging.basicConfig(level=logging.DEBUG, datefmt="%Y-%m-%d %H:%M:%S",

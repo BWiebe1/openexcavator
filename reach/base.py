@@ -22,8 +22,8 @@ class Reach(threading.Thread):
         self.connection = None
         self.daemon = True
         self.running = False
-        self.tcp_buf_len = 16000
         self.conn_buf = 1024
+        self.tcp_buf_len = 16000
         self._data = None
 
 
@@ -63,7 +63,7 @@ class Reach(threading.Thread):
                               self.host, self.port)
                 self.connection = None
                 time.sleep(3)
-            time.sleep(0.1)
+            time.sleep(0.05)
 
 
     def get_data(self):

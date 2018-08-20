@@ -16,7 +16,7 @@ class ReachIMU(Reach):
 
     def __init__(self, host, port):
         Reach.__init__(self, host, port, message_delimiter="\n")
-        self.conn_buf = 1024
+        self.conn_buf = 128
         self.tcp_buf_len = 16000
 
 
@@ -32,4 +32,5 @@ class ReachIMU(Reach):
             data["pitch"] = imu_data["p"]
             data["yaw"] = imu_data["y"]
             data["imu_time"] = imu_data["t"]
+        
         return data
