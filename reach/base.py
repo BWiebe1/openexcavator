@@ -42,6 +42,7 @@ class Reach(threading.Thread):
             try:
                 if not self.connection:
                     self.connection = socket.create_connection((self.host, self.port), 3)
+                    self.connection.setsockopt(socket.IPPROTO_TCP, socket.TCP_NODELAY, 1)
                 data = self.connection.recv(self.conn_buf)
                 if not data:
                     raise Exception("no data received on socket for 3 seconds")
