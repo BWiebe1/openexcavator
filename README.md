@@ -60,7 +60,8 @@ BusISI2C=false
 SPIBus=5
 SPISelect=1
 ```
-You can now test if the IMU data is being correctly read by running: `python Fusion.py`  
+You can now test if the IMU data is being correctly read by running: `python Fusion.py`.  
+A very important step in order to get correct IMU data is ***calibration***. At the very least, magnetometer calibration must be performed; run `/usr/local/bin/RTIMULibCal` and follow the on-screen instructions - this will update RTIMULib.ini with calibration data.   
 Afterwards copy the Python scripts (`imu_reader.py` and `imu_server.py`) into the destination folder  
 ```
 cd /imu/RTIMULib2/Linux/python/tests
