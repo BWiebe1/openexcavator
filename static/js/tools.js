@@ -97,12 +97,12 @@ function refreshPosition() {
 			$('#ptim').css('color', 'red');
 			console.log('cannot parse position data: ' + data + ', error: ' + err.message); 
 		}
-		setTimeout(refreshPosition, 1000);
+		setTimeout(refreshPosition, 100);
 	})
 	.fail(function() {
 		$('#ptim').css('color', 'red');
 		console.log('cannot retrieve position data');
-		setTimeout(refreshPosition, 5000);
+		setTimeout(refreshPosition, 3000);
 	});
 }
 

@@ -26,11 +26,11 @@ class ReachIMU(Reach):
         for sentence in sentences:
             try:
                 imu_data = json.loads(sentence.strip())
-            except:
+            except ValueError:
                 continue
             data["roll"] = imu_data["r"]
             data["pitch"] = imu_data["p"]
             data["yaw"] = imu_data["y"]
             data["imu_time"] = imu_data["t"]
-        
+
         return data

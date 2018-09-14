@@ -42,9 +42,17 @@ def main():
             # print("%f %f %f" % (x,y,z))
             read_error_count = 0 
             data = imu.getIMUData()
-            fusion_pose = data["fusionPose"]
-            data = {"r": math.degrees(fusion_pose[0]), "p": math.degrees(fusion_pose[1]),
-                         "y": math.degrees(fusion_pose[2]), "t": time.time()}
+            clock = time.time()
+            roll = math.degrees(data["fusionPose"][0])
+            pitch = math.degrees(data["fusionPose"][1])
+            yaw = math.degrees(data["fusionPose"][2])
+            if roll < 0:
+                roll += 360
+            if pitch < 0:
+                pitch += 360
+            if yaw < 0:
+                yaw += 360
+            data = {"r": roll, "p": pitch, "y": yaw, "t": clock}
             output_file = open("/tmp/imu", "w")
             output_file.write(json.dumps(data) + "\n")
             output_file.close()
@@ -55,6 +63,7 @@ def main():
                 sys.exit(1)
             read_error_count += 1
             time.sleep(0.1)
+
 
 if __name__ == "__main__":
     main()
