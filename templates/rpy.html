@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>RPY</title>
+	<meta name="viewport" content="initial-scale=1.0">
+	<meta charset="utf-8">
+	<script	src="/static/js/jquery.min.js"></script>
+	<script src="/static/js/three.min.js"></script>
+	<style>
+		div {
+			margin: 5px;
+		}
+		input {
+			margin-left: 10px;
+		}
+	</style>
+	<script>
+		function toRadians(angle) {
+	    	return angle * (Math.PI / 180);
+		}
+	
+		function handleOrientation(event) {
+			var yaw = 360-event.alpha;			
+		    var pitch = -event.beta;
+		    var roll = -event.gamma;
+		    $("#roll").val(roll.toFixed(2));
+		    $("#pitch").val(pitch.toFixed(2));
+		    $("#yaw").val(yaw.toFixed(2));
+		    var x = parseFloat($("#x").val());
+		    var y = parseFloat($("#y").val());
+		    var z = parseFloat($("#z").val());
+		    var dist = parseFloat($("#d").val());
+	        let matrix = new THREE.Matrix4().makeRotationFromEuler(new THREE.Euler(toRadians(-pitch), toRadians(-roll), toRadians(yaw)));
+		    let moveVector = new THREE.Vector3(0, 0, -dist);
+		    moveVector.applyMatrix4(matrix);
+		    let position = new THREE.Vector3(z, y, x).add(moveVector);
+		    $("#position").html("X " + position.x.toFixed(2) + ", Y " + position.y.toFixed(2) + ", Z " + position.z.toFixed(2));
+		}
+		
+		window.addEventListener('deviceorientation', handleOrientation);
+	</script>
+</head>
+<body>
+   	<p>Test page</p>
+   	<div>
+   		X<input id="x" type="text" value="100"/>
+   	</div>
+   	<div>
+   		Y<input id="y" type="text" value="100"/>
+   	</div>
+   	<div>
+   		Z<input id="z" type="text" value="100"/>
+   	</div>
+	<div>
+   		Roll<input id="roll" type="text" value="0"/>
+   	</div>
+   	<div>
+   		Pitch<input id="pitch" type="text" value="0"/>
+   	</div>
+   	<div>
+   		Yaw<input id="yaw" type="text" value="0"/>
+   	</div>
+    <div>
+   		Distance<input id="d" type="text" value="10"/>
+   	</div>
+   	<div>
+   		<p id="position"></p>
+   	</div>
+</body>
+</html>

@@ -46,6 +46,7 @@ def main():
     application = tornado.web.Application(
         [
             (r"/", handlers.HomeHandler),
+            (r"/rpy", handlers.RPYHandler),
             (r"/data", handlers.DataHandler),
             (r"/tools", handlers.ToolsHandler),
             (r"/update", handlers.UpdateHandler)
