@@ -40,6 +40,15 @@ class HomeHandler(BaseHandler):
         self.render("home.html", config=config, error_msg=error_msg)
 
 
+class RPYHandler(BaseHandler):
+    """
+    Handler for / request, renders rpy.html
+    """
+
+    def get(self):
+        self.render("rpy.html")
+
+
 class DataHandler(BaseHandler):
     """
     Handler for async /position request.
