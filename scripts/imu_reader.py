@@ -46,10 +46,6 @@ def main():
             roll = math.degrees(data["fusionPose"][0])
             pitch = math.degrees(data["fusionPose"][1])
             yaw = math.degrees(data["fusionPose"][2])
-            if roll < 0:
-                roll += 360
-            if pitch < 0:
-                pitch += 360
             if yaw < 0:
                 yaw += 360
             data = {"r": roll, "p": pitch, "y": yaw, "t": clock}

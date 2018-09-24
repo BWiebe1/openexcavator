@@ -22,9 +22,7 @@ function refreshData() {
 				data.alt = data.alt - antennaHeight;
 			}
 			else {
-				var roll = data.roll > 180 ? data.roll - 360 : data.roll;
-				var pitch = data.pitch > 180 ? data.pitch - 360 : data.pitch;
-				$('#rpy').html(roll.toFixed(2) + "/" + pitch.toFixed(2) + "/" + data.yaw.toFixed(2));
+				$('#rpy').html(data.roll.toFixed(2) + "/" + data.pitch.toFixed(2) + "/" + data.yaw.toFixed(2));
 				var result = getNewPositionRPY(data.lng, data.lat, data.alt, antennaHeight, data.roll, data.pitch, data.yaw);
 				data.lng = result[0];
 				data.lat = result[1];
