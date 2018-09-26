@@ -5,7 +5,7 @@
 	<meta name="viewport" content="initial-scale=1.0">
 	<meta charset="utf-8">
 	<script	src="/static/js/jquery.min.js"></script>
-	<script src="/static/js/three.min.js"></script>
+	<script src="/static/js/common.js"></script>
 	<style>
 		div {
 			margin: 5px;
@@ -15,10 +15,7 @@
 		}
 	</style>
 	<script>
-		function toRadians(angle) {
-	    	return angle * (Math.PI / 180);
-		}
-	
+		
 		function handleOrientation(event) {
 			var yaw = 360-event.alpha;			
 		    var pitch = -event.beta;
@@ -30,11 +27,8 @@
 		    var y = parseFloat($("#y").val());
 		    var z = parseFloat($("#z").val());
 		    var dist = parseFloat($("#d").val());
-	        let matrix = new THREE.Matrix4().makeRotationFromEuler(new THREE.Euler(toRadians(-pitch), toRadians(-roll), toRadians(yaw)));
-		    let moveVector = new THREE.Vector3(0, 0, -dist);
-		    moveVector.applyMatrix4(matrix);
-		    let position = new THREE.Vector3(z, y, x).add(moveVector);
-		    $("#position").html("X " + position.x.toFixed(2) + ", Y " + position.y.toFixed(2) + ", Z " + position.z.toFixed(2));
+		    var position = rodloc([x, y, z], dist, -pitch, -roll, -yaw);
+		    $("#position").html("X " + position[0].toFixed(2) + ", Y " + position[1].toFixed(2) + ", Z " + position[2].toFixed(2));
 		}
 		
 		window.addEventListener('deviceorientation', handleOrientation);
@@ -46,10 +40,10 @@
    		X<input id="x" type="text" value="100"/>
    	</div>
    	<div>
-   		Y<input id="y" type="text" value="100"/>
+   		Y<input id="y" type="text" value="200"/>
    	</div>
    	<div>
-   		Z<input id="z" type="text" value="100"/>
+   		Z<input id="z" type="text" value="300"/>
    	</div>
 	<div>
    		Roll<input id="roll" type="text" value="0"/>
