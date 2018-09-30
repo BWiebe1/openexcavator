@@ -19,7 +19,7 @@
 		function handleOrientation(event) {
 			var yaw = 360-event.alpha;			
 		    var pitch = -event.beta;
-		    var roll = -event.gamma;
+		    var roll = event.gamma;
 		    $("#roll").val(roll.toFixed(2));
 		    $("#pitch").val(pitch.toFixed(2));
 		    $("#yaw").val(yaw.toFixed(2));
@@ -27,7 +27,7 @@
 		    var y = parseFloat($("#y").val());
 		    var z = parseFloat($("#z").val());
 		    var dist = parseFloat($("#d").val());
-		    var position = rodloc([x, y, z], dist, -pitch, -roll, -yaw);
+		    var position = rodloc([x, y, z], dist, -pitch, roll, -yaw);
 		    $("#position").html("X " + position[0].toFixed(2) + ", Y " + position[1].toFixed(2) + ", Z " + position[2].toFixed(2));
 		}
 		
