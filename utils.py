@@ -16,7 +16,7 @@ def json_encoder(obj):
     :return: date
     """
     if isinstance(obj, datetime.datetime):
-        return obj.strftime("%H:%M:%S")
+        return obj.timestamp()
     return obj
 
 

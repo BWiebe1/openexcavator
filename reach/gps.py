@@ -47,7 +47,8 @@ class ReachGPS(Reach):
                 if parts[2] != "A":
                     logging.warning("invalid GNRMC data: %s", sentence)
                     continue
-                position["ts"] = datetime.datetime.strptime(parts[9]+parts[1][:6], "%d%m%y%H%M%S")
+                position["ts"] = datetime.datetime.strptime(parts[9]+parts[1], "%d%m%y%H%M%S.%f")
+                position["ts"] = position["ts"].replace(tzinfo=datetime.timezone.utc)
                 position["lat"] = self.parse_coordinate(parts[3], parts[4])
                 position["lng"] = self.parse_coordinate(parts[5], parts[6])
                 position["speed"] = float(parts[7]) * 1.852 #knots to km/h

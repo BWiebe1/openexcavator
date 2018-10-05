@@ -17,7 +17,7 @@ function refreshData() {
 		var data = JSON.parse(raw_data);
 		try {
 			var gpsAlt = data.alt;
-			if (data.pitch === undefined || data.yaw == undefined) {
+			if (data.roll === undefined || data.pitch == undefined || data.yaw == undefined) {
 				$('#rpy').html("not available");
 				data.alt = data.alt - antennaHeight;
 			}
@@ -49,7 +49,10 @@ function refreshData() {
 				fix = 'float';
 			}
 			$('#pacc').html(data.acc.toFixed(2) + '/' + fix);
-			$('#ptim').html(data.ts);
+			$('#ptim').html(new Date(data.ts * 1000).toISOString().substr(11, 8));
+			if (data.imu_time !== undefined) {
+				$('#ptim').html(new Date(data.ts * 1000).toISOString().substr(11, 8) + "/" + (data.ts - data.imu_time).toFixed(2));
+			}
 			var result = getPolylineDistance(path, data, pointById);
 			var slope = result[1] * 100;
 			$('#pslo').html(slope.toFixed(2) + '%');
