@@ -15,8 +15,8 @@ class ReachGPS(Reach):
     """
 
 
-    def __init__(self, host, port):
-        Reach.__init__(self, host, port, message_delimiter="\n$GNRMC")
+    def __init__(self, host, port, queue):
+        Reach.__init__(self, host, port, queue, message_delimiter="\n$GNRMC")
         self.conn_buf = 4096
         self.tcp_buf_len = 64000
 

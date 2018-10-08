@@ -14,17 +14,17 @@ class Reach(threading.Thread):
     """TCP client implementation for Reach GPS & IMU data receiver"""
 
 
-    def __init__(self, host, port, message_delimiter=""):
+    def __init__(self, host, port, queue, message_delimiter=""):
         super().__init__()
         self.host = host
         self.port = port
+        self.queue = queue
         self.message_delimiter = message_delimiter
         self.connection = None
         self.daemon = True
         self.running = False
         self.conn_buf = 1024
         self.tcp_buf_len = 16000
-        self._data = None
 
 
     def parse_data(self, data):
@@ -38,7 +38,12 @@ class Reach(threading.Thread):
     def run(self):
         self.running = True
         buffer = ""
+        connect_time = time.time()
         while self.running:
+            if time.time() - connect_time >= 1800:
+                connect_time = time.time()
+                logging.info("reconnecting to %s:%s due to connection age", self.host, self.port)
+                self.connection = None
             try:
                 if not self.connection:
                     self.connection = socket.create_connection((self.host, self.port), 3)
@@ -51,13 +56,11 @@ class Reach(threading.Thread):
                 if marker > -1:
                     message = buffer[:marker+1]
                     buffer = buffer[marker+1:]
-                    self._data = None
                     data = self.parse_data(message)
-                    self._data = data
+                    self.queue.append(data)
                 elif len(buffer) > self.tcp_buf_len:
                     logging.warning("no valid GNRMC/IMU data received from %s:%s, clearing buffer",
                                     self.host, self.port)
-                    self._data = None
                     buffer = ""
             except Exception as exc:
                 logging.error("cannot update data: %s, reconnecting to %s:%s", exc,
@@ -65,14 +68,6 @@ class Reach(threading.Thread):
                 self.connection = None
                 time.sleep(3)
             time.sleep(0.05)
-
-
-    def get_data(self):
-        """
-        Return current stored data
-        :returns: schedules list
-        """
-        return self._data
 
 
     def stop(self):

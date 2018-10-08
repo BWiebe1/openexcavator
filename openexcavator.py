@@ -7,6 +7,7 @@ Created on Oct 11, 2017
 import logging
 import signal
 import sys
+from collections import deque
 import tornado.ioloop
 import tornado.web
 
@@ -57,10 +58,12 @@ def main():
         static_path=settings.STATIC_PATH
     )
     application.database = database
-    application.gps_client = ReachGPS(config["gps_host"], int(config["gps_port"]))
-    application.gps_client.start()
-    application.imu_client = ReachIMU(config["imu_host"], int(config["imu_port"]))
-    application.imu_client.start()
+    application.gps_queue = deque(maxlen=1)
+    gps_client = ReachGPS(config["gps_host"], int(config["gps_port"]), application.gps_queue)
+    gps_client.start()
+    application.imu_queue = deque(maxlen=1)
+    imu_client = ReachIMU(config["imu_host"], int(config["imu_port"]), application.imu_queue)
+    imu_client.start()
     logging.info("starting openexcavator on %s:%s ...", settings.ADDRESS, settings.PORT)
     application.listen(settings.PORT, address=settings.ADDRESS)
     tornado.ioloop.IOLoop.instance().start()

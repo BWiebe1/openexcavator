@@ -58,12 +58,10 @@ class DataHandler(BaseHandler):
 
     def get(self):
         data = {}
-        position = self.application.gps_client.get_data()
-        if position:
-            data.update(position)
-        angles = self.application.imu_client.get_data()
-        if angles:
-            data.update(angles)
+        if len(self.application.gps_queue):
+            data.update(self.application.gps_queue[-1])
+        if len(self.application.imu_queue):
+            data.update(self.application.imu_queue[-1])
         response = json.dumps(data, default=utils.json_encoder)
         self.finish(response)
 
