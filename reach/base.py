@@ -40,14 +40,14 @@ class Reach(threading.Thread):
         buffer = ""
         connect_time = time.time()
         while self.running:
-            if time.time() - connect_time >= 1800:
-                connect_time = time.time()
+            if time.time() - connect_time >= 900:
                 logging.info("reconnecting to %s:%s due to connection age", self.host, self.port)
                 self.connection = None
             try:
                 if not self.connection:
                     self.connection = socket.create_connection((self.host, self.port), 3)
                     self.connection.setsockopt(socket.IPPROTO_TCP, socket.TCP_NODELAY, 1)
+                    connect_time = time.time()
                 data = self.connection.recv(self.conn_buf)
                 if not data:
                     raise Exception("no data received on socket for 3 seconds")
