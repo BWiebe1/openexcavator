@@ -124,7 +124,7 @@ function initMap() {
 		pointById[i].circle = circle;
 	}
 	polyline = L.polyline(latlngs, {color: 'red'}).addTo(myMap);
-	bounds = polyline.getBounds()
+	bounds = polyline.getBounds();
 	myMap.fitBounds(bounds);
 	var popup = L.popup();
 	function onMapClick(e) {

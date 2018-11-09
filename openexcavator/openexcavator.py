@@ -10,10 +10,8 @@ import sys
 import tornado.ioloop
 import tornado.web
 
-import database
-import handlers
-import settings
-from utils import format_frame
+from openexcavator import handlers, database, settings
+from openexcavator.utils import format_frame
 
 
 def app_exit():

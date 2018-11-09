@@ -722,11 +722,10 @@ function getOuterSizes(element) {
   var styles = window.getComputedStyle(element);
   var x = parseFloat(styles.marginTop) + parseFloat(styles.marginBottom);
   var y = parseFloat(styles.marginLeft) + parseFloat(styles.marginRight);
-  var result = {
+  return  {
     width: element.offsetWidth + y,
     height: element.offsetHeight + x
   };
-  return result;
 }
 
 /**

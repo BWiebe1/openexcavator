@@ -1,5 +1,5 @@
 //adapted from https://github.com/TimothyGu/utm
-'use strict'
+'use strict';
 
 var K0 = 0.9996;
 

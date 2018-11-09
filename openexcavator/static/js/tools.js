@@ -73,8 +73,8 @@ function refreshPosition() {
 					utmZone.num = aux.zoneNum;
 					utmZone.letter = aux.zoneLetter;
 				}
-				projStartCoords = fromLatLon(startData.lat, startData.lng, utmZone.num);startData.alt
-				projCoords = fromLatLon(data.lat, data.lng, utmZone.num);data.alt
+				var  projStartCoords = fromLatLon(startData.lat, startData.lng, utmZone.num);startData.alt
+				var projCoords = fromLatLon(data.lat, data.lng, utmZone.num);data.alt
 				var run = pointToPointDistance(projStartCoords.easting, projStartCoords.northing, 0, projCoords.easting, projCoords.northing, 0);
 				var rise = data.alt - startData.alt;
 				$('#rise_run').html(rise.toFixed(2) + '/' + run.toFixed(2));

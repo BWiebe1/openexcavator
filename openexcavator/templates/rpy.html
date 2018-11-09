@@ -1,0 +1,158 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>RPY</title>
+	<meta name="viewport" content="initial-scale=1.0">
+	<meta charset="utf-8">
+	<script	src="/openexcavator/static/js/jquery.min.js"></script>
+	<script	src="/openexcavator/static/js/proj.js"></script>
+	<script src="/openexcavator/static/js/common.js"></script>
+	<style>
+		div {
+			margin: 5px;
+		}
+		input {
+			margin-left: 10px;
+		}
+	</style>
+	<script>
+      	var utmZone = {"num": undefined, "letter": undefined}; //make sure we use the same UTM zone for all data
+		var targetLat = 60.27566793166667;
+		var targetLng = 5.084627915;
+		var targetAlt = 86.569;
+		var targetPos;
+		var dist = 2.085;
+		
+		const permutator = (inputArr) => {
+		  let result = [];
+
+		  const permute = (arr, m = []) => {
+		    if (arr.length === 0) {
+		      result.push(m)
+		    } else {
+		      for (let i = 0; i < arr.length; i++) {
+		        let curr = arr.slice();
+		        let next = curr.splice(i, 1);
+		        permute(curr.slice(), m.concat(next))
+		     }
+		   }
+		 };
+
+		 permute(inputArr);
+
+		 return result;
+		};
+		
+		var readings = [
+		    {lng: 5.084601476666666, lat: 60.275670975, alt: 85.93299999999999, dist: 2.08, roll: -45.763247571231325, pitch: -1.2837628693644576, yaw: 355.8334343421305},
+		    {lng: 5.084590615, lat: 60.27566598333333, alt: 84.53, dist: 2.08, roll: -89.68505565165971, pitch: -0.7453901767894217, yaw: 344.75315142334085},
+		    {lng: 5.084654713333333, lat: 60.275667041666665, alt: 85.971, dist: 2.08, roll: 45.97729545453577, pitch: -0.2950390125024129, yaw: 357.79085257947435},
+		    {lng: 5.084664448333333, lat: 60.275668296666666, alt: 84.23, dist: 2.08, roll: 89.03299798216611, pitch: -0.4560872692097766, yaw: 4.91513859609046},
+		    {lng: 5.084631601666667, lat: 60.275681258333336, alt: 85.971, dist: 2.08, roll: -4.784904817864889, pitch: -46.20434118783075, yaw: 4.426133336897513},
+		    {lng: 5.084630306666667, lat: 60.275686691666664, alt: 84.57900000000001, dist: 2.08, roll: 18.92074927460108, pitch: -87.05875229314142, yaw: 332.0439008309017},
+		    {lng: 5.084620458333333, lat: 60.275655056666665, alt: 85.914, dist: 2.08, roll: -3.989174119180063, pitch: 46.576224497570436, yaw: 353.37885346529055},
+		    {lng: 5.084623823333334, lat: 60.27564978, alt: 84.53200000000001, dist: 2.08, roll: 55.634202808787904, pitch: 88.00756802169374, yaw: 50.09667816561884},
+		    {lng: 5.084627958333333, lat: 60.27566824666667, alt: 86.57, dist: 2.08, roll: -0.32641217911397064, pitch: -0.418923836409767, yaw: 89.77879999801813},
+		    {lng: 5.084630041666666, lat: 60.275649105, alt: 84.578, dist: 2.08, roll: -87.86638118136041, pitch: -0.6385488359757915, yaw: 87.77754774101523},
+		    {lng: 5.084599766666667, lat: 60.27567411333333, alt: 86.576, dist: 2.08, roll: 87.97204420782052, pitch: -0.7781497917612127, yaw: 88.2280601884801},
+		    {lng: 5.084665711666666, lat: 60.27566717333333, alt: 84.499, dist: 2.08, roll: 78.05966387294781, pitch: 83.68099152213834, yaw: 134.501970268102}
+		];
+		
+		function performTest() {
+			
+			var permutations = ["rpy", "ryp", "pry", "pyr", "yrp", "ypr"];
+			var signs = [1, -1];
+			var permutations = permutator(["r", "p", "y"]);
+			for (var z=0;z<permutations.length;z++) {
+				for (var i=0; i<signs.length;i++) {
+					for (var j=0; j<signs.length;j++) {
+						for (var k=0; k<signs.length;k++) {
+							var sumDist = 0;
+							for (var w=0;w<readings.length;w++) {
+								var reading = readings[w];
+								var dataDict = {"r": reading.roll, "p": reading.pitch, "y": reading.yaw};
+								var order = [];
+								for (var l=0;l<permutations[z].length;l++) {
+									order.push(dataDict[permutations[z][l]])
+								}
+								var rr = signs[i] * order[0];
+								var pp = signs[j] * order[1];
+								var yy = signs[k] * order[2];
+								var aroll = permutations[z][0];
+								var apitch = permutations[z][1];
+								var ayaw = permutations[z][2];
+								if (utmZone.num === undefined) {
+									var aux = fromLatLon(reading.lat, reading.lng);
+									utmZone.num = aux.zoneNum;
+									utmZone.letter = aux.zoneLetter;
+								}
+								if (targetPos === undefined) {
+									targetPos = fromLatLon(targetLat, targetLng);
+									targetPos.altitude = targetAlt;
+								}
+								var projCoords = fromLatLon(reading.lat, reading.lng, utmZone.num);
+								projCoords.altitude = reading.alt;
+							    var position = rodloc([projCoords.easting, projCoords.northing, projCoords.altitude], dist, rr, pp, yy);
+							    var distance2D = pointToPointDistance(targetPos.easting, targetPos.northing, 0, position[0], position[1], 0);
+							    var distance3D = pointToPointDistance(targetPos.easting, targetPos.northing, targetPos.altitude, position[0], position[1], position[2]);
+							    var height = targetAlt - position[2];
+							    sumDist += distance2D;
+								//projCoords = toLatLon(position[0], position[1], projCoords.zoneNum, projCoords.zoneLetter);
+								//return [projCoords.longitude, projCoords.latitude, position[2]];
+							}	
+						    console.log("distance sum 3D: " + sumDist.toFixed(3) + ", rpy: " + rr + ", " + pp + ", " + yy + ", comb: " + permutations[z] + ", [i,j,k]:"  + i + ", " + j + ", " + k);
+						}
+					}
+				}
+			}
+		}
+		
+		function handleOrientation(event) {
+			var yaw = 360-event.alpha;			
+		    var pitch = event.beta;
+		    var roll = event.gamma;
+		    $("#roll").val(roll.toFixed(2));
+		    $("#pitch").val(pitch.toFixed(2));
+		    $("#yaw").val(yaw.toFixed(2));
+		    var x = parseFloat($("#x").val());
+		    var y = parseFloat($("#y").val());
+		    var z = parseFloat($("#z").val());
+		    var dist = parseFloat($("#d").val());
+		    var position = rodloc([x, y, z], dist, pitch, roll, -yaw);
+		    $("#position").html("X " + position[0].toFixed(2) + ", Y " + position[1].toFixed(2) + ", Z " + position[2].toFixed(2));
+		}
+		
+		window.addEventListener('deviceorientation', handleOrientation);
+		
+		//performTest();
+		
+	</script>
+</head>
+<body>
+   	<p>Test page</p>
+   	<div>
+   		X<input id="x" type="text" value="100"/>
+   	</div>
+   	<div>
+   		Y<input id="y" type="text" value="200"/>
+   	</div>
+   	<div>
+   		Z<input id="z" type="text" value="300"/>
+   	</div>
+	<div>
+   		Roll<input id="roll" type="text" value="0"/>
+   	</div>
+   	<div>
+   		Pitch<input id="pitch" type="text" value="0"/>
+   	</div>
+   	<div>
+   		Yaw<input id="yaw" type="text" value="0"/>
+   	</div>
+    <div>
+   		Distance<input id="d" type="text" value="10"/>
+   	</div>
+   	<div>
+   		<p id="position"></p>
+   	</div>
+</body>
+</html>

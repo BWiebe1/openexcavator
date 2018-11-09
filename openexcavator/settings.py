@@ -7,7 +7,7 @@ Created on Oct 11, 2017
 import logging
 
 PORT = 8000
-ADDRESS = "127.0.0.1"
+ADDRESS = "0.0.0.0"
 
 logging.basicConfig(level=logging.DEBUG, datefmt="%Y-%m-%d %H:%M:%S",
                     format="[%(asctime)s] - %(levelname)s - %(message)s")
