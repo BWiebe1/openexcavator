@@ -1,11 +1,11 @@
 window.utmZone = {"num": undefined, "letter": undefined}; //make sure we use the same UTM zone for all data
-var myMap = null;
-var currentPosition = null;
-var currentData = null;
-var startPosition = null;
-var startData = null;
-var polyline = null;
-var antennaHeight = null;
+let myMap = null;
+let currentPosition = null;
+let currentData = null;
+let startPosition = null;
+let startData = null;
+let polyline = null;
+let antennaHeight = null;
 
 function initMap() {
 	myMap = L.map('mapid').setView([53.58442963725551, -110.51799774169922], 18);
@@ -17,7 +17,7 @@ function initMap() {
 		id: 'mapbox.streets'
 		}).addTo(myMap);
 	L.control.scale().addTo(myMap);
-	var popup = L.popup();
+	let popup = L.popup();
 	function onMapClick(e) {
 		popup
 			.setLatLng(e.latlng)
@@ -36,7 +36,7 @@ function initMap() {
 function setValuesData(prefix, data) {
 	$('#' + prefix + 'lat').html(data.lat.toFixed(8));
 	$('#' + prefix + 'lng').html(data.lng.toFixed(8));
-	var fix = data.fix;
+	let fix = data.fix;
 	if (data.fix === 1) {
 		fix = 'single';
 		$('#' + prefix + 'acc').css('color', 'red');
@@ -49,18 +49,18 @@ function setValuesData(prefix, data) {
 	}
 	$('#' + prefix + 'acc').html(data.acc.toFixed(2) + '/' + fix);
 	$('#' + prefix + 'tim').html(data.ts);
-	var value = data.alt - antennaHeight;
+	let value = data.alt - antennaHeight;
 	$('#' + prefix + 'alt').html(value.toFixed(2));
 	$('#' + prefix + 'tim').css('color', 'black');
 }
 
 function refreshPosition() {
-	var jqxhr = $.get( "/data").done(function (data) {
-		var data = JSON.parse(data);
+	let jqxhr = $.get( "/data").done(function (rawData) {
+		let data = JSON.parse(rawData);
 		try {
 			setValuesData('current_', data);
 			if (startData !== null) {
-				var latlngs = [new L.LatLng(startData.lat, startData.lng), 
+				let latlngs = [new L.LatLng(startData.lat, startData.lng),
 					new L.LatLng(data.lat, data.lng)];
 				if (polyline === null) {
 					polyline = L.polyline(latlngs, {color: 'red'}).addTo(myMap);
@@ -69,16 +69,16 @@ function refreshPosition() {
 					polyline.setLatLngs(latlngs);
 				}
 				if (utmZone.num === undefined) {
-					var aux = fromLatLon(startData.lat, startData.lng);
+					let aux = fromLatLon(startData.lat, startData.lng);
 					utmZone.num = aux.zoneNum;
 					utmZone.letter = aux.zoneLetter;
 				}
-				var  projStartCoords = fromLatLon(startData.lat, startData.lng, utmZone.num);startData.alt
-				var projCoords = fromLatLon(data.lat, data.lng, utmZone.num);data.alt
-				var run = pointToPointDistance(projStartCoords.easting, projStartCoords.northing, 0, projCoords.easting, projCoords.northing, 0);
-				var rise = data.alt - startData.alt;
+				let projStartCoords = fromLatLon(startData.lat, startData.lng, utmZone.num);startData.alt;
+				let projCoords = fromLatLon(data.lat, data.lng, utmZone.num);
+				let run = pointToPointDistance(projStartCoords.easting, projStartCoords.northing, 0, projCoords.easting, projCoords.northing, 0);
+				let rise = data.alt - startData.alt;
 				$('#rise_run').html(rise.toFixed(2) + '/' + run.toFixed(2));
-				var slope = rise / run;
+				let slope = rise / run;
 				slope = slope * 100;
 				slope = slope.toFixed(2) + '%';
 				$('#slope').html(slope);
@@ -112,7 +112,7 @@ $(document).ready(function() {
 		startData = JSON.parse(sessionStorage.getItem("startData"));
 		setValuesData('start_', startData);
 	}
-	$('#mark').click(function(){
+	$('#mark').lick(function(){
 		startData = JSON.parse(JSON.stringify(currentData)); //"deep" copy for simple data
 		sessionStorage.setItem('startData', JSON.stringify(startData));
 		setValuesData('start_', startData);

@@ -113,7 +113,7 @@
 .leaflet-control {
 	position: relative;
 	z-index: 800;
-	pointer-events: visiblePainted; /* IE 9-10 doesn't have auto */
+	/*pointer-events: visiblePainted; !* IE 9-10 doesn't have auto *!*/
 	pointer-events: auto;
 	}
 .leaflet-top,
@@ -234,7 +234,7 @@
 .leaflet-marker-icon.leaflet-interactive,
 .leaflet-image-layer.leaflet-interactive,
 .leaflet-pane > svg path.leaflet-interactive {
-	pointer-events: visiblePainted; /* IE 9-10 doesn't have auto */
+	/*pointer-events: visiblePainted; !* IE 9-10 doesn't have auto *!*/
 	pointer-events: auto;
 	}
 
@@ -282,8 +282,7 @@
 	}
 .leaflet-bar a,
 .leaflet-control-layers-toggle {
-	background-position: 50% 50%;
-	background-repeat: no-repeat;
+	background: no-repeat 50% 50%;
 	display: block;
 	}
 .leaflet-bar a:hover {

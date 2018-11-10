@@ -16,12 +16,12 @@
 		}
 	</style>
 	<script>
-      	var utmZone = {"num": undefined, "letter": undefined}; //make sure we use the same UTM zone for all data
-		var targetLat = 60.27566793166667;
-		var targetLng = 5.084627915;
-		var targetAlt = 86.569;
-		var targetPos;
-		var dist = 2.085;
+      	let utmZone = {"num": undefined, "letter": undefined}; //make sure we use the same UTM zone for all data
+		let targetLat = 60.27566793166667;
+		let targetLng = 5.084627915;
+		let targetAlt = 86.569;
+		let targetPos;
+		let dist = 2.085;
 		
 		const permutator = (inputArr) => {
 		  let result = [];
@@ -43,7 +43,7 @@
 		 return result;
 		};
 		
-		var readings = [
+		let readings = [
 		    {lng: 5.084601476666666, lat: 60.275670975, alt: 85.93299999999999, dist: 2.08, roll: -45.763247571231325, pitch: -1.2837628693644576, yaw: 355.8334343421305},
 		    {lng: 5.084590615, lat: 60.27566598333333, alt: 84.53, dist: 2.08, roll: -89.68505565165971, pitch: -0.7453901767894217, yaw: 344.75315142334085},
 		    {lng: 5.084654713333333, lat: 60.275667041666665, alt: 85.971, dist: 2.08, roll: 45.97729545453577, pitch: -0.2950390125024129, yaw: 357.79085257947435},
@@ -60,29 +60,28 @@
 		
 		function performTest() {
 			
-			var permutations = ["rpy", "ryp", "pry", "pyr", "yrp", "ypr"];
-			var signs = [1, -1];
-			var permutations = permutator(["r", "p", "y"]);
-			for (var z=0;z<permutations.length;z++) {
-				for (var i=0; i<signs.length;i++) {
-					for (var j=0; j<signs.length;j++) {
-						for (var k=0; k<signs.length;k++) {
-							var sumDist = 0;
-							for (var w=0;w<readings.length;w++) {
-								var reading = readings[w];
-								var dataDict = {"r": reading.roll, "p": reading.pitch, "y": reading.yaw};
-								var order = [];
-								for (var l=0;l<permutations[z].length;l++) {
+			let signs = [1, -1];
+			let permutations = permutator(["r", "p", "y"]);
+			for (let z=0;z<permutations.length;z++) {
+				for (let i=0; i<signs.length;i++) {
+					for (let j=0; j<signs.length;j++) {
+						for (let k=0; k<signs.length;k++) {
+							let sumDist = 0;
+							for (let w=0;w<readings.length;w++) {
+								let reading = readings[w];
+								let dataDict = {"r": reading.roll, "p": reading.pitch, "y": reading.yaw};
+								let order = [];
+								for (let l=0;l<permutations[z].length;l++) {
 									order.push(dataDict[permutations[z][l]])
 								}
-								var rr = signs[i] * order[0];
-								var pp = signs[j] * order[1];
-								var yy = signs[k] * order[2];
-								var aroll = permutations[z][0];
-								var apitch = permutations[z][1];
-								var ayaw = permutations[z][2];
+								let rr = signs[i] * order[0];
+								let pp = signs[j] * order[1];
+								let yy = signs[k] * order[2];
+								let aroll = permutations[z][0];
+								let apitch = permutations[z][1];
+								let ayaw = permutations[z][2];
 								if (utmZone.num === undefined) {
-									var aux = fromLatLon(reading.lat, reading.lng);
+									let aux = fromLatLon(reading.lat, reading.lng);
 									utmZone.num = aux.zoneNum;
 									utmZone.letter = aux.zoneLetter;
 								}
@@ -90,12 +89,12 @@
 									targetPos = fromLatLon(targetLat, targetLng);
 									targetPos.altitude = targetAlt;
 								}
-								var projCoords = fromLatLon(reading.lat, reading.lng, utmZone.num);
+								let projCoords = fromLatLon(reading.lat, reading.lng, utmZone.num);
 								projCoords.altitude = reading.alt;
-							    var position = rodloc([projCoords.easting, projCoords.northing, projCoords.altitude], dist, rr, pp, yy);
-							    var distance2D = pointToPointDistance(targetPos.easting, targetPos.northing, 0, position[0], position[1], 0);
-							    var distance3D = pointToPointDistance(targetPos.easting, targetPos.northing, targetPos.altitude, position[0], position[1], position[2]);
-							    var height = targetAlt - position[2];
+							    let position = rodloc([projCoords.easting, projCoords.northing, projCoords.altitude], dist, rr, pp, yy);
+							    let distance2D = pointToPointDistance(targetPos.easting, targetPos.northing, 0, position[0], position[1], 0);
+							    let distance3D = pointToPointDistance(targetPos.easting, targetPos.northing, targetPos.altitude, position[0], position[1], position[2]);
+							    let height = targetAlt - position[2];
 							    sumDist += distance2D;
 								//projCoords = toLatLon(position[0], position[1], projCoords.zoneNum, projCoords.zoneLetter);
 								//return [projCoords.longitude, projCoords.latitude, position[2]];
@@ -108,17 +107,17 @@
 		}
 		
 		function handleOrientation(event) {
-			var yaw = 360-event.alpha;			
-		    var pitch = event.beta;
-		    var roll = event.gamma;
+			let yaw = 360-event.alpha;
+		    let pitch = event.beta;
+		    let roll = event.gamma;
 		    $("#roll").val(roll.toFixed(2));
 		    $("#pitch").val(pitch.toFixed(2));
 		    $("#yaw").val(yaw.toFixed(2));
-		    var x = parseFloat($("#x").val());
-		    var y = parseFloat($("#y").val());
-		    var z = parseFloat($("#z").val());
-		    var dist = parseFloat($("#d").val());
-		    var position = rodloc([x, y, z], dist, pitch, roll, -yaw);
+		    let x = parseFloat($("#x").val());
+		    let y = parseFloat($("#y").val());
+		    let z = parseFloat($("#z").val());
+		    let dist = parseFloat($("#d").val());
+		    let position = rodloc([x, y, z], dist, pitch, roll, -yaw);
 		    $("#position").html("X " + position[0].toFixed(2) + ", Y " + position[1].toFixed(2) + ", Z " + position[2].toFixed(2));
 		}
 		
@@ -131,25 +130,25 @@
 <body>
    	<p>Test page</p>
    	<div>
-   		X<input id="x" type="text" value="100"/>
+   		X<input id="x" type="text" value="100" title="X"/>
    	</div>
    	<div>
-   		Y<input id="y" type="text" value="200"/>
+   		Y<input id="y" type="text" value="200" title="Y"/>
    	</div>
    	<div>
-   		Z<input id="z" type="text" value="300"/>
+   		Z<input id="z" type="text" value="300" title="Z"/>
    	</div>
 	<div>
-   		Roll<input id="roll" type="text" value="0"/>
+   		Roll<input id="roll" type="text" value="0" title="Roll"/>
    	</div>
    	<div>
-   		Pitch<input id="pitch" type="text" value="0"/>
+   		Pitch<input id="pitch" type="text" value="0" title="Pitch"/>
    	</div>
    	<div>
-   		Yaw<input id="yaw" type="text" value="0"/>
+   		Yaw<input id="yaw" type="text" value="0" title="Yaw"/>
    	</div>
     <div>
-   		Distance<input id="d" type="text" value="10"/>
+   		Distance<input id="d" type="text" value="10" title="Distance"/>
    	</div>
    	<div>
    		<p id="position"></p>

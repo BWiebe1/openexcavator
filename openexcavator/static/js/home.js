@@ -1,33 +1,33 @@
 window.utmZone = {"num": undefined, "letter": undefined}; //make sure we use the same UTM zone for all data
-var myMap = null;
-var currentPosition = null;
-var bounds = null;
-var polyline = null;
-var pointById = {}; //holds points in UTM coordinate system
-var startAltitude = null;
-var stopAltitude = null;
-var antennaHeight = null;
-var safetyHeight = null;
-var safetyDepth = null;
-var path = null;
+let myMap = null;
+let currentPosition = null;
+let bounds = null;
+let polyline = null;
+let pointById = {}; //holds points in UTM coordinate system
+let startAltitude = null;
+let stopAltitude = null;
+let antennaHeight = null;
+let safetyHeight = null;
+let safetyDepth = null;
+let path = null;
 
 
 function refreshData() {
-	var jqxhr = $.get( "/data").done(function (raw_data) {
-		var data = JSON.parse(raw_data);
+	let jqxhr = $.get( "/data").done(function (raw_data) {
+		let data = JSON.parse(raw_data);
 		try {
-			var gpsAlt = data.alt;
-			if (data.roll === undefined || data.pitch == undefined || data.yaw == undefined) {
+			let gpsAlt = data.alt;
+			if (data.roll === undefined || data.pitch === undefined || data.yaw === undefined) {
 				$('#rpy').html("not available");
 				data.alt = data.alt - antennaHeight;
 			}
 			else {
 				$('#rpy').html(data.roll.toFixed(2) + "/" + data.pitch.toFixed(2) + "/" + data.yaw.toFixed(2));
-				var result = getNewPositionRPY(data.lng, data.lat, data.alt, antennaHeight, data.roll, data.pitch, data.yaw);
-				data.lng = result[0];
-				data.lat = result[1];
-				data.alt = result[2];
-				var dt = new Date();
+				let rpyResult = getNewPositionRPY(data.lng, data.lat, data.alt, antennaHeight, data.roll, data.pitch, data.yaw);
+				data.lng = rpyResult[0];
+				data.lat = rpyResult[1];
+				data.alt = rpyResult[2];
+				let dt = new Date();
 				if (dt.getTime()/1000 - data.imu_time > 3) {
 					$('#rpy').css("color", "red");
 				}
@@ -37,7 +37,7 @@ function refreshData() {
 			}
 			$('#plat').html(data.lat.toFixed(8));
 			$('#plng').html(data.lng.toFixed(8));
-			var fix = data.fix;
+			let fix = data.fix;
 			if (data.fix === 1) {
 				fix = 'single';
 				$('#pacc').css('color', 'red');
@@ -53,8 +53,8 @@ function refreshData() {
 			if (data.imu_time !== undefined) {
 				$('#ptim').html(new Date(data.ts * 1000).toISOString().substr(11, 8) + "/" + (data.ts - data.imu_time).toFixed(2));
 			}
-			var result = getPolylineDistance(path, data, pointById);
-			var slope = result[1] * 100;
+			let result = getPolylineDistance(path, data, pointById);
+			let slope = result[1] * 100;
 			$('#pslo').html(slope.toFixed(2) + '%');
 			$('#palt').html(gpsAlt.toFixed(2) + '/' + data.alt.toFixed(2));
 			$('#height').html(formatDelta(result[2]));
@@ -107,14 +107,14 @@ function initMap() {
 		id: 'mapbox.streets'
 		}).addTo(myMap);
 	L.control.scale().addTo(myMap);
-	var latlngs = [];
-	var deltaAltitude = (stopAltitude-startAltitude) / (path.length - 1);
-	for (var i=0; i<path.length;i++) {
-		var coords = path[i].geometry.coordinates;
-		var circle = L.circle(new L.LatLng(coords[1], coords[0]), 1).addTo(myMap);
+	let latlngs = [];
+	let deltaAltitude = (stopAltitude-startAltitude) / (path.length - 1);
+	for (let i=0; i<path.length;i++) {
+		let coords = path[i].geometry.coordinates;
+		let circle = L.circle(new L.LatLng(coords[1], coords[0]), 1).addTo(myMap);
 		latlngs.push(new L.LatLng(coords[1], coords[0]));
 		if (utmZone.num === undefined) {
-			var aux = fromLatLon(coords[1], coords[0]);
+			let aux = fromLatLon(coords[1], coords[0]);
 			utmZone.num = aux.zoneNum;
 			utmZone.letter = aux.zoneLetter;
 		}
@@ -126,7 +126,7 @@ function initMap() {
 	polyline = L.polyline(latlngs, {color: 'red'}).addTo(myMap);
 	bounds = polyline.getBounds();
 	myMap.fitBounds(bounds);
-	var popup = L.popup();
+	let popup = L.popup();
 	function onMapClick(e) {
 		popup
 			.setLatLng(e.latlng)

@@ -1,33 +1,33 @@
 //adapted from https://github.com/TimothyGu/utm
 'use strict';
 
-var K0 = 0.9996;
+const K0 = 0.9996;
 
-var E = 0.00669438;
-var E2 = Math.pow(E, 2);
-var E3 = Math.pow(E, 3);
-var E_P2 = E / (1 - E);
+const E = 0.00669438;
+const E2 = Math.pow(E, 2);
+const E3 = Math.pow(E, 3);
+const E_P2 = E / (1 - E);
 
-var SQRT_E = Math.sqrt(1 - E);
-var _E = (1 - SQRT_E) / (1 + SQRT_E);
-var _E2 = Math.pow(_E, 2);
-var _E3 = Math.pow(_E, 3);
-var _E4 = Math.pow(_E, 4);
-var _E5 = Math.pow(_E, 5);
+const SQRT_E = Math.sqrt(1 - E);
+const _E = (1 - SQRT_E) / (1 + SQRT_E);
+const _E2 = Math.pow(_E, 2);
+const _E3 = Math.pow(_E, 3);
+const _E4 = Math.pow(_E, 4);
+const _E5 = Math.pow(_E, 5);
 
-var M1 = 1 - E / 4 - 3 * E2 / 64 - 5 * E3 / 256;
-var M2 = 3 * E / 8 + 3 * E2 / 32 + 45 * E3 / 1024;
-var M3 = 15 * E2 / 256 + 45 * E3 / 1024;
-var M4 = 35 * E3 / 3072;
+const M1 = 1 - E / 4 - 3 * E2 / 64 - 5 * E3 / 256;
+const M2 = 3 * E / 8 + 3 * E2 / 32 + 45 * E3 / 1024;
+const M3 = 15 * E2 / 256 + 45 * E3 / 1024;
+const M4 = 35 * E3 / 3072;
 
-var P2 = 3 / 2 * _E - 27 / 32 * _E3 + 269 / 512 * _E5;
-var P3 = 21 / 16 * _E2 - 55 / 32 * _E4;
-var P4 = 151 / 96 * _E3 - 417 / 128 * _E5;
-var P5 = 1097 / 512 * _E4;
+const P2 = 3 / 2 * _E - 27 / 32 * _E3 + 269 / 512 * _E5;
+const P3 = 21 / 16 * _E2 - 55 / 32 * _E4;
+const P4 = 151 / 96 * _E3 - 417 / 128 * _E5;
+const P5 = 1097 / 512 * _E4;
 
-var R = 6378137;
+const R = 6378137;
 
-var ZONE_LETTERS = 'CDEFGHJKLMNPQRSTUVWXX';
+const ZONE_LETTERS = 'CDEFGHJKLMNPQRSTUVWXX';
 
 
 function latitudeToZoneLetter(latitude) {
@@ -96,50 +96,50 @@ function toLatLon(easting, northing, zoneNum, zoneLetter, northern, strict) {
     northern = zoneLetter >= 'N';
   }
 
-  var x = easting - 500000;
-  var y = northing;
+  let x = easting - 500000;
+  let y = northing;
 
   if (!northern) y -= 1e7;
 
-  var m = y / K0;
-  var mu = m / (R * M1);
+  let m = y / K0;
+  let mu = m / (R * M1);
 
-  var pRad = mu +
+  let pRad = mu +
              P2 * Math.sin(2 * mu) +
              P3 * Math.sin(4 * mu) +
              P4 * Math.sin(6 * mu) +
              P5 * Math.sin(8 * mu);
 
-  var pSin = Math.sin(pRad);
-  var pSin2 = Math.pow(pSin, 2);
+  let pSin = Math.sin(pRad);
+  let pSin2 = Math.pow(pSin, 2);
 
-  var pCos = Math.cos(pRad);
+  let pCos = Math.cos(pRad);
 
-  var pTan = Math.tan(pRad);
-  var pTan2 = Math.pow(pTan, 2);
-  var pTan4 = Math.pow(pTan, 4);
+  let pTan = Math.tan(pRad);
+  let pTan2 = Math.pow(pTan, 2);
+  let pTan4 = Math.pow(pTan, 4);
 
-  var epSin = 1 - E * pSin2;
-  var epSinSqrt = Math.sqrt(epSin);
+  let epSin = 1 - E * pSin2;
+  let epSinSqrt = Math.sqrt(epSin);
 
-  var n = R / epSinSqrt;
-  var r = (1 - E) / epSin;
+  let n = R / epSinSqrt;
+  let r = (1 - E) / epSin;
 
-  var c = _E * pCos * pCos;
-  var c2 = c * c;
+  let c = _E * pCos * pCos;
+  let c2 = c * c;
 
-  var d = x / (n * K0);
-  var d2 = Math.pow(d, 2);
-  var d3 = Math.pow(d, 3);
-  var d4 = Math.pow(d, 4);
-  var d5 = Math.pow(d, 5);
-  var d6 = Math.pow(d, 6);
+  let d = x / (n * K0);
+  let d2 = Math.pow(d, 2);
+  let d3 = Math.pow(d, 3);
+  let d4 = Math.pow(d, 4);
+  let d5 = Math.pow(d, 5);
+  let d6 = Math.pow(d, 6);
 
-  var latitude = pRad - (pTan / r) *
+  let latitude = pRad - (pTan / r) *
                  (d2 / 2 -
                   d4 / 24 * (5 + 3 * pTan2 + 10 * c - 4 * c2 - 9 * E_P2)) +
                   d6 / 720 * (61 + 90 * pTan2 + 298 * c + 45 * pTan4 - 252 * E_P2 - 3 * c2);
-  var longitude = (d -
+  let longitude = (d -
                    d3 / 6 * (1 + 2 * pTan2 + c) +
                    d5 / 120 * (5 - 2 * c + 28 * pTan2 - 3 * c2 + 8 * E_P2 + 24 * pTan4)) / pCos;
 
@@ -158,15 +158,15 @@ function fromLatLon(latitude, longitude, forceZoneNum) {
     throw new RangeError('longitude out of range (must be between 180 deg W and 180 deg E)');
   }
 
-  var latRad = toRadians(latitude);
-  var latSin = Math.sin(latRad);
-  var latCos = Math.cos(latRad);
+  let latRad = toRadians(latitude);
+  let latSin = Math.sin(latRad);
+  let latCos = Math.cos(latRad);
 
-  var latTan = Math.tan(latRad);
-  var latTan2 = Math.pow(latTan, 2);
-  var latTan4 = Math.pow(latTan, 4);
+  let latTan = Math.tan(latRad);
+  let latTan2 = Math.pow(latTan, 2);
+  let latTan4 = Math.pow(latTan, 4);
 
-  var zoneNum;
+  let zoneNum;
 
   if (forceZoneNum === undefined) {
     zoneNum = latLonToZoneNumber(latitude, longitude);
@@ -174,30 +174,30 @@ function fromLatLon(latitude, longitude, forceZoneNum) {
     zoneNum = forceZoneNum;
   }
 
-  var zoneLetter = latitudeToZoneLetter(latitude);
+  let zoneLetter = latitudeToZoneLetter(latitude);
 
-  var lonRad = toRadians(longitude);
-  var centralLon = zoneNumberToCentralLongitude(zoneNum);
-  var centralLonRad = toRadians(centralLon);
+  let lonRad = toRadians(longitude);
+  let centralLon = zoneNumberToCentralLongitude(zoneNum);
+  let centralLonRad = toRadians(centralLon);
 
-  var n = R / Math.sqrt(1 - E * latSin * latSin);
-  var c = E_P2 * latCos * latCos;
+  let n = R / Math.sqrt(1 - E * latSin * latSin);
+  let c = E_P2 * latCos * latCos;
 
-  var a = latCos * (lonRad - centralLonRad);
-  var a2 = Math.pow(a, 2);
-  var a3 = Math.pow(a, 3);
-  var a4 = Math.pow(a, 4);
-  var a5 = Math.pow(a, 5);
-  var a6 = Math.pow(a, 6);
+  let a = latCos * (lonRad - centralLonRad);
+  let a2 = Math.pow(a, 2);
+  let a3 = Math.pow(a, 3);
+  let a4 = Math.pow(a, 4);
+  let a5 = Math.pow(a, 5);
+  let a6 = Math.pow(a, 6);
 
-  var m = R * (M1 * latRad -
+  let m = R * (M1 * latRad -
                M2 * Math.sin(2 * latRad) +
                M3 * Math.sin(4 * latRad) -
                M4 * Math.sin(6 * latRad));
-  var easting = K0 * n * (a +
+  let easting = K0 * n * (a +
                           a3 / 6 * (1 - latTan2 + c) +
                           a5 / 120 * (5 - 18 * latTan2 + latTan4 + 72 * c - 58 * E_P2)) + 500000;
-  var northing = K0 * (m + n * latTan * (a2 / 2 +
+  let northing = K0 * (m + n * latTan * (a2 / 2 +
                                          a4 / 24 * (5 - latTan2 + 9 * c + 4 * c * c) +
                                          a6 / 720 * (61 - 58 * latTan2 + latTan4 + 600 * c - 330 * E_P2)));
   if (latitude < 0) northing += 1e7;

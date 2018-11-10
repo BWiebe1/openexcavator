@@ -1,6 +1,6 @@
 
 function getCookie(name) {
-    var r = document.cookie.match("\\b" + name + "=([^;]*)\\b");
+    let r = document.cookie.match("\\b" + name + "=([^;]*)\\b");
     return r ? r[1] : undefined;
 }
 
@@ -16,31 +16,31 @@ function toRadians(angle) {
 }
 
 function pointToPointDistance(x1, y1, z1, x2, y2, z2) {
-	  var dx = x2 - x1;
-	  var dy = y2 - y1;
-	  var dz = z2 - z1;
+	  let dx = x2 - x1;
+	  let dy = y2 - y1;
+	  let dz = z2 - z1;
 	  return Math.sqrt(dx * dx + dy * dy + dz * dz);
 }
 
 function slope3D(x1, y1, z1, x2, y2, z2) {
-	  var run = pointToPointDistance(x1, y1, 0, x2, y2, 0);
-	  var rise = z2 - z1;  
+	  let run = pointToPointDistance(x1, y1, 0, x2, y2, 0);
+	  let rise = z2 - z1;
 	  return rise / run; 
 }
 
 function pointToSegmentDistance(x, y, z, x1, y1, z1, x2, y2, z2) {
-	  var A = x - x1;
-	  var B = y - y1;
-	  var C = z - z1;
-	  var D = x2 - x1;
-	  var E = y2 - y1;
-	  var F = z2 - z1;
-	  var dot = A * D + B * E + C * F;
-	  var len_sq = D * D + E * E + F * F;
-	  var param = -1;
-	  if (len_sq != 0) //in case of 0 length line
+	  let A = x - x1;
+	  let B = y - y1;
+	  let C = z - z1;
+	  let D = x2 - x1;
+	  let E = y2 - y1;
+	  let F = z2 - z1;
+	  let dot = A * D + B * E + C * F;
+	  let len_sq = D * D + E * E + F * F;
+	  let param = -1;
+	  if (len_sq !== 0) //in case of 0 length line
 	      param = dot / len_sq;
-	  var xx, yy, zz;
+	  let xx, yy, zz;
 	  if (param < 0) {
 	    xx = x1;
 	    yy = y1;
@@ -60,33 +60,33 @@ function pointToSegmentDistance(x, y, z, x1, y1, z1, x2, y2, z2) {
 }
 
 function inverseDistanceWeight(x, y, z, x1, y1, z1, v1, x2, y2, z2, v2) {
-	var d1 = pointToPointDistance(x, y, z, x1, y1, z1);
+	let d1 = pointToPointDistance(x, y, z, x1, y1, z1);
 	if (d1 === 0) {
 		return v1;
 	}
-	var d2 = pointToPointDistance(x, y, z, x2, y2, z2);
+	let d2 = pointToPointDistance(x, y, z, x2, y2, z2);
 	if (d2 === 0) {
 		return v2;
 	}
-	var w1 = 1 / d1;
-	var w2 = 1 / d2;
+	let w1 = 1 / d1;
+	let w2 = 1 / d2;
 	return (w1 * v1 + w2 * v2) / (w1 + w2);
 }
 
 function getPolylineDistance(path, point, pointById) {
-	var minDist = 1000000;
-	var slope = 0;
-	var altDiff = 0;
-	var projCoords = fromLatLon(point.lat, point.lng, utmZone.num);
+	let minDist = 1000000;
+	let slope = 0;
+	let altDiff = 0;
+	let projCoords = fromLatLon(point.lat, point.lng, utmZone.num);
 	projCoords.altitude = point.alt;
-	for (var i=0; i<path.length-1;i++) {
-		var c1 = pointById[i];
-		var c2 = pointById[i+1];
-		var angle = Math.atan2(c2.easting - c1.easting, c2.northing - c1.northing) * 180 / Math.PI;
+	for (let i=0; i<path.length-1;i++) {
+		let c1 = pointById[i];
+		let c2 = pointById[i+1];
+		let angle = Math.atan2(c2.easting - c1.easting, c2.northing - c1.northing) * 180 / Math.PI;
 		if (angle < 0) {
 			angle += 360;
 		}
-		var dist = pointToSegmentDistance(projCoords.easting, projCoords.northing, 0, 
+		let dist = pointToSegmentDistance(projCoords.easting, projCoords.northing, 0,
 				c1.easting, c1.northing, 0, c2.easting, c2.northing, 0); //we use 0 as we only want the horizontal distance
 		if (dist < minDist) {
 			minDist = dist;
@@ -208,7 +208,7 @@ function rodloc(location, length, roll, pitch, yaw) {
 }
 
 function getNewPositionRPY(lng, lat, alt, dist, roll, pitch, yaw) {
-	var projCoords = fromLatLon(lat, lng, utmZone.num);
+	let projCoords = fromLatLon(lat, lng, utmZone.num);
 	projCoords.altitude = alt;
     let position = rodloc([projCoords.easting, projCoords.northing, projCoords.altitude], dist, pitch, roll, yaw);
 	projCoords = toLatLon(position[0], position[1], projCoords.zoneNum, projCoords.zoneLetter);
