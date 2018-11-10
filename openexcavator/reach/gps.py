@@ -14,12 +14,10 @@ class ReachGPS(Reach):
     GPS client implementation for Reach
     """
 
-
     def __init__(self, host, port, queue):
         Reach.__init__(self, host, port, queue, message_delimiter="\n$GNRMC")
         self.conn_buf = 4096
         self.tcp_buf_len = 64000
-
 
     @staticmethod
     def parse_coordinate(coord, hemi):
@@ -37,7 +35,6 @@ class ReachGPS(Reach):
             degrees = degrees * -1
         return degrees
 
-
     def parse_data(self, data):
         sentences = data.split("\n")
         position = {}
@@ -51,13 +48,13 @@ class ReachGPS(Reach):
                 position["ts"] = position["ts"].replace(tzinfo=datetime.timezone.utc)
                 position["lat"] = self.parse_coordinate(parts[3], parts[4])
                 position["lng"] = self.parse_coordinate(parts[5], parts[6])
-                position["speed"] = float(parts[7]) * 1.852 #knots to km/h
-                #position["heading"] = float(parts[8]) #0-360
+                position["speed"] = float(parts[7]) * 1.852  # knots to km/h
+                # position["heading"] = float(parts[8]) #0-360
             elif sentence.startswith("$GNGST"):
                 parts = sentence.split(",")
-                position["acc"] = max(float(parts[6]), float(parts[7])) #meters
+                position["acc"] = max(float(parts[6]), float(parts[7]))  # meters
             elif sentence.startswith("$GNGGA"):
                 parts = sentence.split(",")
-                position["alt"] = float(parts[9]) + float(parts[11])#meters
+                position["alt"] = float(parts[9]) + float(parts[11])  # meters
                 position["fix"] = float(parts[6])
         return position

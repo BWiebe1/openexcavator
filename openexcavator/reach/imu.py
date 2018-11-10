@@ -13,14 +13,13 @@ class ReachIMU(Reach):
     IMU client implementation for Reach
     """
 
-
     def __init__(self, host, port, queue):
         Reach.__init__(self, host, port, queue, message_delimiter="\n")
         self.conn_buf = 512
         self.tcp_buf_len = 16000
 
-
-    def parse_data(self, data):
+    @staticmethod
+    def parse_data(data):
         sentences = data.split("\n")
         data = {}
         for sentence in sentences:

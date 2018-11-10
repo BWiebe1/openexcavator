@@ -13,7 +13,7 @@ logging.basicConfig(level=logging.DEBUG, datefmt="%Y-%m-%d %H:%M:%S",
                     format="[%(asctime)s] - %(levelname)s - %(message)s")
 logging.getLogger("tornado").setLevel(logging.WARNING)
 
-#Tornado settings
+# Tornado settings
 TEMPLATE_PATH = "templates"
 STATIC_PATH = "static"
 COOKIE_SECRET = "__TO_BE_GENERATED__excavatorX__"

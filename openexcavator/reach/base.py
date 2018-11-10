@@ -13,7 +13,6 @@ import time
 class Reach(threading.Thread):
     """TCP client implementation for Reach GPS & IMU data receiver"""
 
-
     def __init__(self, host, port, queue, message_delimiter=""):
         super().__init__()
         self.host = host
@@ -26,14 +25,14 @@ class Reach(threading.Thread):
         self.conn_buf = 1024
         self.tcp_buf_len = 16000
 
-
-    def parse_data(self, data):
+    @staticmethod
+    def parse_data(data):
         """
         Parse GPS/IMU data and and return it; to be implemented by inheriting classes
         :param data: NMEA/IMU sentences (as received over TCP or serial connection for example)
         :returns: data dict
         """
-
+        return {}
 
     def run(self):
         self.running = True
@@ -46,7 +45,7 @@ class Reach(threading.Thread):
                 data = self.connection.recv(self.conn_buf)
                 if not data:
                     raise Exception("no data received on socket for 3 seconds")
-                buffer += data.decode() #bytes to str
+                buffer += data.decode()  # bytes to str
                 marker = buffer.find(self.message_delimiter)
                 if marker > -1:
                     message = buffer[:marker+1]
@@ -63,7 +62,6 @@ class Reach(threading.Thread):
                 self.connection = None
                 time.sleep(3)
             time.sleep(0.05)
-
 
     def stop(self):
         """Set property to stop thread"""

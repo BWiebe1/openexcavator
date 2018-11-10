@@ -4,7 +4,7 @@ Created on Jul 25, 2018
 @author: ionut
 """
 
-#see https://github.com/87yj/EmlidIMU/blob/master/Reach IMU setup.pdf to get RTIMU running
+# see https://github.com/87yj/EmlidIMU/blob/master/Reach IMU setup.pdf to get RTIMU running
 
 import logging
 import json
@@ -17,6 +17,7 @@ import RTIMU
 
 logging.basicConfig(level=logging.DEBUG, datefmt="%Y-%m-%d %H:%M:%S",
                     format="[%(asctime)s] - %(levelname)s - %(message)s")
+
 
 def main():
     logging.info("starting IMU reader application after 4 seconds")
@@ -52,7 +53,7 @@ def main():
             output_file = open("/tmp/imu", "w")
             output_file.write(json.dumps(data) + "\n")
             output_file.close()
-            time.sleep(poll_interval / 1000.0) #ms to seconds
+            time.sleep(poll_interval / 1000.0)  # ms to seconds
         else:
             if read_error_count > 1000:
                 logging.error("read_error_count threshold has been hit, restarting")

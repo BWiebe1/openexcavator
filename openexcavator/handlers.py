@@ -22,11 +22,9 @@ class BaseHandler(tornado.web.RequestHandler):
     other handlers will inherit this and implement the requests
     """
 
-
     def get(self):
         self.set_status(400)
         self.finish("GET not allowed")
-
 
     def post(self):
         self.set_status(400)
@@ -59,7 +57,6 @@ class DataHandler(BaseHandler):
     Get the data from the GPS and IMU threads and return JSON encoded position
     """
 
-
     def init_gps_thread(self):
         """
         Create new GPS thread using config details from database
@@ -71,7 +68,6 @@ class DataHandler(BaseHandler):
                                                self.application.gps_queue)
         self.application.gps_client.start()
 
-
     def init_imu_thread(self):
         """
         Create new IMU thread using config details from database
@@ -82,7 +78,6 @@ class DataHandler(BaseHandler):
         self.application.imu_client = ReachIMU(config["imu_host"], int(config["imu_port"]),
                                                self.application.imu_queue)
         self.application.imu_client.start()
-
 
     @coroutine
     def terminate_gps_thread(self, latency):
@@ -98,7 +93,6 @@ class DataHandler(BaseHandler):
         delattr(self.application, "gps_queue")
         delattr(self.application, "gps_client")
 
-
     @coroutine
     def terminate_imu_thread(self, latency):
         """
@@ -113,7 +107,6 @@ class DataHandler(BaseHandler):
         delattr(self.application, "imu_client")
         yield sleep(0.1)
 
-
     @coroutine
     def get(self):
         if not hasattr(self.application, "gps_queue"):
@@ -127,11 +120,11 @@ class DataHandler(BaseHandler):
         if self.application.imu_queue:
             data.update(self.application.imu_queue[-1])
 
-        #check inter-thread latency
+        # check inter-thread latency
         if "ts" in data and "imu_time" in data:
             try:
                 delta = data["ts"].timestamp() - data["imu_time"]
-                if delta < -0.5:# 300 ms
+                if delta < -0.5:  # 300 ms
                     yield self.terminate_gps_thread(delta)
                 elif delta > 0.5:
                     yield self.terminate_imu_thread(delta)
@@ -158,7 +151,6 @@ class UpdateHandler(BaseHandler):
     """
     Handler for updating config data.
     """
-
 
     def post(self):
         action = self.get_argument("action", "").lower()
@@ -198,7 +190,7 @@ class UpdateHandler(BaseHandler):
                     if file_info["filename"].endswith(".zip"):
                         path = utils.extract_zip(path)
                     pathvalue = json.loads(path.decode())
-                    if not "features" in pathvalue:
+                    if "features" not in pathvalue:
                         error_msg = "missing features from GeoJSON"
                 except ValueError:
                     error_msg = "JSON data is not valid"

@@ -10,22 +10,20 @@ import threading
 import time
 
 
-class IMUServer():
+class IMUServer:
     """
     IMU TCP server implementation to stream IMU data from Reach
     """
 
-
     def __init__(self, host, port):
         self.host = host
         self.port = port
-        #self.rtimu = DummyDataServer() #enable for tests
+        # self.rtimu = DummyDataServer() #enable for tests
         self.clients = {}
         self.sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         self.sock.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
         self.sock.setsockopt(socket.IPPROTO_TCP, socket.TCP_NODELAY, 1)
         self.sock.bind((self.host, self.port))
-
 
     def listen(self):
         """
@@ -42,7 +40,6 @@ class IMUServer():
             self.clients[address] = client
             client.settimeout(60)
             threading.Thread(target=self.handle_client, args=(client, address)).start()
-
 
     def handle_client(self, client, address):
         """
