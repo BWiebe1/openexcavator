@@ -11,9 +11,9 @@ from collections import deque
 import tornado.web
 from tornado.gen import coroutine, sleep
 
-from openexcavator import utils
-from openexcavator.reach.gps import ReachGPS
-from openexcavator.reach.imu import ReachIMU
+import utils
+from reach.gps import ReachGPS
+from reach.imu import ReachIMU
 
 
 class BaseHandler(tornado.web.RequestHandler):

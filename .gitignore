@@ -2,6 +2,7 @@ openexcavator.db
 *.log
 *.pyc
 .idea/
+.venv/
 __pycache__/
 .project
 .pydevproject
