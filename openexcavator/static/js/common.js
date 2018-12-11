@@ -210,7 +210,7 @@ function rodloc(location, length, roll, pitch, yaw) {
 function getNewPositionRPY(lng, lat, alt, dist, roll, pitch, yaw) {
 	let projCoords = fromLatLon(lat, lng, utmZone.num);
 	projCoords.altitude = alt;
-    let position = rodloc([projCoords.easting, projCoords.northing, projCoords.altitude], dist, pitch, roll, yaw);
+    let position = rodloc([projCoords.easting, projCoords.northing, projCoords.altitude], dist, pitch, roll, -yaw);
 	projCoords = toLatLon(position[0], position[1], projCoords.zoneNum, projCoords.zoneLetter);
 	return [projCoords.longitude, projCoords.latitude, position[2]];
 }
