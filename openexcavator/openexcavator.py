@@ -10,8 +10,11 @@ import sys
 import tornado.ioloop
 import tornado.web
 
-import handlers, database, settings
+import database
+import handlers
+import settings
 from utils import format_frame
+from wifimanager import WifiManager
 
 
 def app_exit():
@@ -51,7 +54,12 @@ def main():
         template_path=settings.TEMPLATE_PATH,
         static_path=settings.STATIC_PATH
     )
+
     application.database = database
+    config = application.database.get_config()
+    logging.info("creating new WifiManager thread")
+    application.wifi_manager = WifiManager(config["wifi_ssid"], config["wifi_psk"])
+    application.wifi_manager.start()
     logging.info("starting openexcavator on %s:%s ...", settings.ADDRESS, settings.PORT)
     application.listen(settings.PORT, address=settings.ADDRESS)
     tornado.ioloop.IOLoop.instance().start()

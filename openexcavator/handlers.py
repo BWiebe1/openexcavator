@@ -10,6 +10,7 @@ import subprocess
 from collections import deque
 import tornado.web
 from tornado.gen import coroutine, sleep
+from tornado.escape import url_escape
 
 import utils
 from reach.gps import ReachGPS
@@ -157,12 +158,13 @@ class UpdateHandler(BaseHandler):
         if action == "restart":
             try:
                 logging.info("systemctl action %s openexcavator", action)
-                subprocess.check_output(["sudo", "systemctl", action, "openexcavator"],
+                subprocess.check_output(["systemctl", action, "openexcavator"],
                                         stderr=subprocess.STDOUT)
             except Exception as exc:
                 logging.warning("systemctl: %s", exc)
             return self.render("restart.html", error_message=None)
-
+        wifi_ssid = self.get_argument("wifi_ssid", None)
+        wifi_psk = self.get_argument("wifi_psk", None)
         gps_host = self.get_argument("gps_host", None)
         gps_port = self.get_argument("gps_port", None)
         imu_host = self.get_argument("imu_host", None)
@@ -197,10 +199,10 @@ class UpdateHandler(BaseHandler):
         except Exception as exc:
             error_msg = "invalid input data: %s" % exc
         if error_msg:
-            return self.redirect("/?error_msg=" + tornado.escape.url_escape(error_msg))
+            return self.redirect("/?error_msg=" + url_escape(error_msg))
         data = {"start_altitude": start_altitude, "stop_altitude": stop_altitude, "path": path,
                 "antenna_height": antenna_height, "gps_host": gps_host, "gps_port": gps_port,
-                "imu_host": imu_host, "imu_port": imu_port,
+                "imu_host": imu_host, "imu_port": imu_port, "wifi_ssid": wifi_ssid, "wifi_psk": wifi_psk,
                 "safety_height": safety_height, "safety_depth": safety_depth}
         self.application.database.set_config(data)
         return self.redirect("/")

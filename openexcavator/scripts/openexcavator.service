@@ -3,8 +3,8 @@ Description=openexcavator
 After=default.target
 
 [Service]
-User=pi
-Group=pi
+User=root
+Group=root
 RestartSec=3
 Restart=always
 WorkingDirectory=/var/www/openexcavator

@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
 	<title>Excavator</title>
 	<meta name="viewport" content="initial-scale=1.0">
@@ -30,6 +30,14 @@
           <form enctype="multipart/form-data" action="/update" method="post">
           {% module xsrf_form_html() %}
 	      <div class="modal-body">
+                <div class="input-group">
+			    	<span class="input-group-addon">Wifi SSID</span>
+			    	<input id="wifi_ssid" type="text" class="form-control" name="wifi_ssid" placeholder="wifi_ssid" value="{{config['wifi_ssid']}}">
+	          	</div>
+	  	    	<div class="input-group">
+			    	<span class="input-group-addon">Wifi PWD</span>
+			    	<input id="wifi_psk" type="password" class="form-control" name="wifi_psk" placeholder="wifi_psk" value="{{config['wifi_psk']}}">
+	          	</div>
 	  	      	<div class="input-group">
 			    	<span class="input-group-addon">GPS Host</span>
 			    	<input id="gps_host" type="text" class="form-control" name="gps_host" placeholder="gps_host" value="{{config['gps_host']}}">

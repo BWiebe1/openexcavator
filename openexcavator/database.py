@@ -52,6 +52,8 @@ def populate_config():
     conn = sqlite3.connect("openexcavator.db")
     query = "INSERT INTO config(key, value) VALUES(?, ?)"
     data = [
+        ("wifi_ssid", ""),
+        ("wifi_psk", ""),
         ("gps_host", "127.0.0.1"),
         ("gps_port", "9000"),
         ("imu_host", "127.0.0.1"),
