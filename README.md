@@ -30,6 +30,24 @@ Check the logs to be sure the application is working as expected:
 ```
 journalctl -f -u openexcavator
 ```
+### Wi-Fi
+The application can manage Wi-Fi connectivity so it can work with an existing network or standalone (in hotspot mode).  
+In order to manage the connectivity it needs an SSID and password defined (see Settings -> `Wi-Fi SSID` and `PWD`).  
+`openexcavator` handles writing the `wpa_supplicant` file (needed to connect to existing networks) at runtime with the network defined in the _Settings_ page but the user must manually create the following files upon installation (only needed once):    
+```
+sudo cp /var/www/openexcavator/scripts/dnsmasq.conf /etc/dnsmasq.conf
+sudo cp /var/www/openexcavator/scripts/hostapd.conf /etc/hostapd/hostapd.conf
+```
+Afterwards edit `/etc/dhcpcd.conf` and add the following lines:
+```
+#openexcavator config
+ssid openexcavator
+static ip_address=192.168.173.1/24
+static routers=192.168.173.1
+static domain_name_servers=192.168.173.1
+```
+Of course you can change the hotspot SSID and password if you need to; IP addresses can also be changed but make sure you edit both `dnsmasq` and `dhcpcd` files.   
+Reboot the Pi after installation and upon restart it should start managing Wi-Fi connectivity.
 ### IMU
 To integrate the IMU data as well, you need to install [imud](https://github.com/BWiebe1/imud).  
 Afterwards just make sure *IMU Host* and *Port* settings are correct and you should see IMU data (*roll*, *pitch* and *yaw*) in the web application.

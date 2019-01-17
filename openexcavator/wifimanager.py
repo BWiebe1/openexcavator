@@ -41,6 +41,9 @@ class WifiManager(threading.Thread):
 
     def run(self):
         start_time = time.time()
+        if not self.network_name and not self.psk:
+            logging.info("wifi details not set, exiting wifi thread")
+            return
         logging.info("stopping existing hostapd/wpa_supplicant processes")
         self.stop_hostapd()
         self.stop_wpa_supplicant()
@@ -67,17 +70,18 @@ class WifiManager(threading.Thread):
                 logging.error("cannot run wifi check: %s", exc, exc_info=True)
                 time.sleep(8)
 
-    @staticmethod
-    def start_wpa_supplicant():
+    def start_wpa_supplicant(self, restarted=False):
         """
         Try to start wpa_supplicant
         :return: True or False depending on status
         """
         try:
-            subprocess.call(["wpa_supplicant", "-Dnl80211", "-iwlan0", "-B",
-                            "-c", "/etc/wpa_supplicant/wpa_supplicant.conf"],
-                            stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
+            cmd = ["wpa_supplicant", "-Dnl80211", "-iwlan0", "-B", "-c", "/etc/wpa_supplicant/wpa_supplicant.conf"]
+            subprocess.check_output(cmd, stderr=subprocess.STDOUT)
         except subprocess.CalledProcessError as exc:
+            if not restarted and "unclean termination" in exc.output.decode():
+                logging.warning("retrying wpa_supplicant due to unclean termination")
+                return self.start_wpa_supplicant(restarted=True)
             logging.error("cannot start wpa_supplicant: %s", exc)
             return False
         return True
@@ -160,5 +164,5 @@ class WifiManager(threading.Thread):
         except subprocess.CalledProcessError as exc:
             if mode == "client":
                 logging.warning("cannot retrieve wifi mode:%s, output: %s", exc, output)
-        logging.debug("wifi mode %s, connected_network %s", mode, connected_network)
+        #logging.debug("wifi mode %s, connected_network %s", mode, connected_network)
         return mode, connected_network
