@@ -7,8 +7,10 @@ It uses a thread for reading GPS data and a thread for reading IMU data; on the 
 It is designed to run on a Raspberry Pi (but can run on other devices as well) and present a web interface used by the operator on a smartphone / tablet / notebook PC.
 
 ## Installation
-Install dependencies (use `sudo apt-get install python3-pip python3-dev` if you don't have pip installed):
+Install dependencies:
 ```
+sudo apt-get install python3-pip python3-dev
+sudo apt-get install dnsmasq hostapd #for Wi-Fi management if desired
 sudo pip3 install tornado
 ```
 Since the application has a restart function it needs to run unde the Pi user:
