@@ -48,34 +48,27 @@ static ip_address=192.168.173.1/24
 static routers=192.168.173.1
 static domain_name_servers=192.168.173.1
 ```
+Default hotspot SSID is `openexcavator` while the password is `somepass`; default IP address for the Pi is `192.168.173.1`.  
 Of course you can change the hotspot SSID and password if you need to; IP addresses can also be changed but make sure you edit both `dnsmasq` and `dhcpcd` files.   
 Reboot the Pi after installation and upon restart it should start managing Wi-Fi connectivity.
 ### IMU
 To integrate the IMU data as well, you need to install [imud](https://github.com/BWiebe1/imud).  
 Afterwards just make sure *IMU Host* and *Port* settings are correct and you should see IMU data (*roll*, *pitch* and *yaw*) in the web application.
 ### nginx
-While not strictly necessary it's a good idea to put `nginx` in front of the web application:
+While not strictly necessary it's a good idea to put `nginx` in front of the web application.  
+To be able to serve **cached tiles** for the map, installing nginx is mandatory. By default it caches up to 2 GB of tiles for one year so loading the map once before going into hotspot mode should make the tiles available later on.
 ```
-sudo apt-get install nginx
+sudo cp /var/www/openexcavator/scripts/nginx.conf /etc/nginx/sites-available/openexcavator
+sudo ln -s /etc/nginx/sites-available/openexcavator /etc/nginx/sites-enabled/
+sudo cp /var/www/openexcavator/scripts/tile_cache.conf /etc/nginx/conf.d/
 ```
-Afterwards edit `/etc/nginx/sites-available/default`:
-```
-server {
-        listen 80 default_server;
-        location / {
-                proxy_pass http://127.0.0.1:8000;
-        }
-        location /static/ {
-            root /var/www/openexcavator;
-            access_log off;
-        }
-}
-```
+estart nginx using: `sudo systemctl restart nginx` and access the web application at `http://openexcavator/` 
 ## Code
  - the main module is `openexcavator.py` which starts the GPS and IMU threads and initializes the web application  
  - `settings.py` contains the Tornado-specific values (host, port to listen on, template and static paths)  
  - `database.py` holds database functions used to retrieve and update the configuration values (such as GPS host and port, IMU host and port, designated path, antenna height, safety height and start/stop altitude values); these values are stored in a SQLite3 database (`openexcavator.db`)  
  - `handlers.py` contains the implementation for the web application requests (render `home.html` and `tools.html`, return new position & IMU data from the threads, update configuration and restart application)  
+ - `wifimanager.py` starts a thread to control Wi-Fi connectivity (enables hotspot when preferred network is not available)  
  -  the `reach` package has implementations for GPS and IMU TCP clients (to retrieve the data from the Reach device)  
  -  the application uses Javascript for map rendering and data calculations (relevant files in the `static` folder are `common.js`, `home.js`, `tools.js`)  
  -  the `scripts` folder contains the `systemd` service definition for openexcavator  

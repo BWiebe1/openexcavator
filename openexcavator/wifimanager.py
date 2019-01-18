@@ -164,5 +164,5 @@ class WifiManager(threading.Thread):
         except subprocess.CalledProcessError as exc:
             if mode == "client":
                 logging.warning("cannot retrieve wifi mode:%s, output: %s", exc, output)
-        #logging.debug("wifi mode %s, connected_network %s", mode, connected_network)
+        # logging.debug("wifi mode %s, connected_network %s", mode, connected_network)
         return mode, connected_network
