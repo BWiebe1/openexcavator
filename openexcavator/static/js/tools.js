@@ -9,7 +9,7 @@ let antennaHeight = null;
 
 function initMap() {
 	myMap = L.map('mapid').setView([53.58442963725551, -110.51799774169922], 18);
-	L.tileLayer('http://openexcavator/{z}/{x}/{y}.png', {
+	L.tileLayer('/{z}/{x}/{y}.png', {
 		maxZoom: 22,
 		attribution: 'Map data &copy; <a href="http://openstreetmap.org">OpenStreetMap</a> contributors, ' +
 			'<a href="http://creativecommons.org/licenses/by-sa/2.0/">CC-BY-SA</a>, ' +
