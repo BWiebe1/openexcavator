@@ -56,12 +56,20 @@ class Reach(threading.Thread):
                     logging.warning("no valid GNRMC/IMU data received from %s:%s, clearing buffer",
                                     self.host, self.port)
                     buffer = ""
+                    self.queue.append({})
             except Exception as exc:
                 logging.error("cannot update data: %s, reconnecting to %s:%s", exc,
                               self.host, self.port)
                 self.connection = None
+                self.queue.append({})
                 time.sleep(3)
-            time.sleep(0.05)
+            time.sleep(0.02)
+
+    def disconnect_source(self):
+        """
+        Close TCP stream (used for fixing delay issues)
+        """
+        self.connection = None
 
     def stop(self):
         """Set property to stop thread"""

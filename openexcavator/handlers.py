@@ -7,14 +7,11 @@ Created on Aug 28, 2017
 import json
 import logging
 import subprocess
-from collections import deque
 import tornado.web
 from tornado.gen import coroutine, sleep
 from tornado.escape import url_escape
 
 import utils
-from reach.gps import ReachGPS
-from reach.imu import ReachIMU
 
 
 class BaseHandler(tornado.web.RequestHandler):
@@ -58,82 +55,11 @@ class DataHandler(BaseHandler):
     Get the data from the GPS and IMU threads and return JSON encoded position
     """
 
-    def init_gps_thread(self):
-        """
-        Create new GPS thread using config details from database
-        """
-        logging.info("creating new GPS thread")
-        config = self.application.database.get_config()
-        self.application.gps_queue = deque(maxlen=1)
-        self.application.gps_client = ReachGPS(config["gps_host"], int(config["gps_port"]),
-                                               self.application.gps_queue)
-        self.application.gps_client.start()
-
-    def init_imu_thread(self):
-        """
-        Create new IMU thread using config details from database
-        """
-        logging.info("creating new IMU thread")
-        config = self.application.database.get_config()
-        self.application.imu_queue = deque(maxlen=1)
-        self.application.imu_client = ReachIMU(config["imu_host"], int(config["imu_port"]),
-                                               self.application.imu_queue)
-        self.application.imu_client.start()
-
-    @coroutine
-    def terminate_gps_thread(self, latency):
-        """
-        Terminate GPS thread due to latency and log value
-        :param latency: value that mandated the thread to be stopped
-        """
-        logging.info("stopping GPS thread due to latency %s", latency)
-        if not hasattr(self.application, "gps_client"):
-            return
-        self.application.gps_client.stop()
-        yield sleep(0.1)
-        delattr(self.application, "gps_queue")
-        delattr(self.application, "gps_client")
-
-    @coroutine
-    def terminate_imu_thread(self, latency):
-        """
-        Terminate IMU thread due to latency and log value
-        :param latency: value that mandated the thread to be stopped
-        """
-        logging.info("stopping IMU thread due to latency %s", latency)
-        if not hasattr(self.application, "imu_client"):
-            return
-        self.application.imu_client.stop()
-        delattr(self.application, "imu_queue")
-        delattr(self.application, "imu_client")
-        yield sleep(0.1)
-
     @coroutine
     def get(self):
-        if not hasattr(self.application, "gps_queue"):
-            self.init_gps_thread()
-        if not hasattr(self.application, "imu_queue"):
-            self.init_imu_thread()
-
         data = {}
-        if self.application.gps_queue:
-            data.update(self.application.gps_queue[-1])
-        if self.application.imu_queue:
-            data.update(self.application.imu_queue[-1])
-
-        # check inter-thread latency
-        if "ts" in data and "imu_time" in data:
-            try:
-                delta = data["ts"].timestamp() - data["imu_time"]
-                if delta < -0.5:  # 300 ms
-                    yield self.terminate_gps_thread(delta)
-                elif delta > 0.5:
-                    yield self.terminate_imu_thread(delta)
-            except Exception as exc:
-                logging.warning("cannot determine inter-thread latency: %s", exc)
-                yield self.terminate_gps_thread(0)
-                yield self.terminate_imu_thread(0)
-
+        if self.application.data_queue:
+            data.update(self.application.data_queue[-1])
         response = json.dumps(data, default=utils.json_encoder)
         self.finish(response)
 

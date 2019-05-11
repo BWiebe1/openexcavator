@@ -9,10 +9,12 @@ import signal
 import sys
 import tornado.ioloop
 import tornado.web
+from collections import deque
 
 import database
 import handlers
 import settings
+from reach.data import DataManager
 from utils import format_frame
 from wifimanager import WifiManager
 
@@ -57,6 +59,10 @@ def main():
 
     application.database = database
     config = application.database.get_config()
+    logging.info("creating new DataManager thread")
+    application.data_queue = deque(maxlen=1)
+    application.data_manager = DataManager(config, application.data_queue)
+    application.data_manager.start()
     logging.info("creating new WifiManager thread")
     application.wifi_manager = WifiManager(config["wifi_ssid"], config["wifi_psk"])
     application.wifi_manager.start()
