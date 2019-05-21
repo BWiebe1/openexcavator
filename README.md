@@ -19,12 +19,13 @@ sudo mkdir /var/www
 sudo chown -R pi:pi /var/www
 cd /var/www
 git clone https://github.com/dkwiebe/openexcavator
-cd openexcavator
+mv /var/www/openexcavator/openexcavator/* /var/www/openexcavator
+rm -r /var/www/openexcavator/openexcavator
 python3 openexcavator/database.py #initialize database entries
 ```
 To enable the application to start at boot copy the `openexcavator.service` systemd file from the `scripts` folder to `/etc/systemd/system` and enable it using:
 ```
-sudo cp /var/www/openexcavator/openexcavator/scripts/openexcavator.service /etc/systemd/system/
+sudo cp /var/www/openexcavator/scripts/openexcavator.service /etc/systemd/system/
 sudo systemctl daemon-reload  
 sudo systemctl enable openexcavator && sudo systemctl start openexcavator
 ```
@@ -37,8 +38,8 @@ The application can manage Wi-Fi connectivity so it can work with an existing ne
 In order to manage the connectivity it needs an SSID and password defined (see Settings -> `Wi-Fi SSID` and `PWD`).  
 `openexcavator` handles writing the `wpa_supplicant` file (needed to connect to existing networks) at runtime with the network defined in the _Settings_ page but the user must manually create the following files upon installation (only needed once):    
 ```
-sudo cp /var/www/openexcavator/openexcavator/scripts/dnsmasq.conf /etc/dnsmasq.conf
-sudo cp /var/www/openexcavator/openexcavator/scripts/hostapd.conf /etc/hostapd/hostapd.conf
+sudo cp /var/www/openexcavator/scripts/dnsmasq.conf /etc/dnsmasq.conf
+sudo cp /var/www/openexcavator/scripts/hostapd.conf /etc/hostapd/hostapd.conf
 ```
 Afterwards edit `/etc/dhcpcd.conf` and add the following lines:
 ```
@@ -58,9 +59,9 @@ Afterwards just make sure *IMU Host* and *Port* settings are correct and you sho
 While not strictly necessary it's a good idea to put `nginx` in front of the web application.  
 To be able to serve **cached tiles** for the map, installing nginx is mandatory. By default it caches up to 2 GB of tiles for one year so loading the map once before going into hotspot mode should make the tiles available later on.
 ```
-sudo cp /var/www/openexcavator/openexcavator/scripts/nginx.conf /etc/nginx/sites-available/openexcavator
+sudo cp /var/www/openexcavator/scripts/nginx.conf /etc/nginx/sites-available/openexcavator
 sudo ln -s /etc/nginx/sites-available/openexcavator /etc/nginx/sites-enabled/
-sudo cp /var/www/openexcavator/openexcavator/scripts/tile_cache.conf /etc/nginx/conf.d/
+sudo cp /var/www/openexcavator/scripts/tile_cache.conf /etc/nginx/conf.d/
 ```
 estart nginx using: `sudo systemctl restart nginx` and access the web application at `http://openexcavator/` 
 ## Code
