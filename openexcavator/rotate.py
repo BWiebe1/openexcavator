@@ -28,7 +28,7 @@ def vm_mult(offset, rotate):
      * @returns {Vector3D} - The new offset vector
      */
     """
-    arr = [0,1,2]
+    arr = [0, 1, 2]
     return list(map(lambda x: x_mult(offset,rotate[x]), arr))
 
 
@@ -42,7 +42,7 @@ def setup_rotation_matrix(angle, vec):
      * @returns {Matrix3D} - the rotation matrix
      */
     """
-    #Leaving L in for re-usability, but it should always be 1 in our case
+    # Leaving L in for re-usability, but it should always be 1 in our case
     u = vec[0]
     v = vec[1]
     w = vec[2]
@@ -102,7 +102,7 @@ def rod_location(location, length, roll, pitch, yaw):
     rpitch = math.radians(pitch)
     rroll = math.radians(roll)
 
-    #This is where our axes start
+    # This is where our axes start
     x = [1, 0, 0]
     y = [0, 1, 0]
     z = [0, 0, 1]
@@ -127,11 +127,11 @@ def rod_location(location, length, roll, pitch, yaw):
     # now take what started out as [0, 0, 1] and place the end of the rod
     # (at what started out as [0, 0, -length])
     arr = [0, 1, 2]
-    rotend = list(map(lambda n: -length*z3prime[n], arr))
+    rot_end = list(map(lambda n: -length*z3prime[n], arr))
 
     # now take that and add it to the original location of the plane
     # and return it as the result
-    return list(map(lambda n: location[n]+rotend[n], arr))
+    return list(map(lambda n: location[n]+rot_end[n], arr))
 
 
 def get_new_position_rpy(lng, lat, alt, dist, roll, pitch, yaw, utm_zone):

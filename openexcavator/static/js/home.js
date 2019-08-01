@@ -31,8 +31,9 @@ function refreshData() {
                     $('#rpy').css("color", "black");
                 }
             }
-            $('#plat').html(data.lat.toFixed(8));
-            $('#plng').html(data.lng.toFixed(8));
+            //{"utm_zone": {"letter": "U", "num": 12}
+            $('#plat').html(data.hasOwnProperty("lat") ? data.lat.toFixed(8) : 0);
+            $('#plng').html(data.hasOwnProperty("lng") ? data.lng.toFixed(8) : 0);
             let fix = data.fix;
             if (data.fix === 1) {
                 fix = 'single';
@@ -44,7 +45,7 @@ function refreshData() {
                 $('#pacc').css('color', '#CCCC00');
                 fix = 'float';
             }
-            $('#pacc').html(data.acc.toFixed(2) + '/' + fix);
+            $('#pacc').html(data.hasOwnProperty("acc") ? data.acc.toFixed(2) : 0 + '/' + fix);
             $('#ptim').html(new Date(data.ts * 1000).toISOString().substr(11, 8));
             if (data.imu_time !== undefined) {
                 $('#ptim').html(new Date(data.ts * 1000).toISOString().substr(11, 8) + "/" + data.delta.toFixed(2));
@@ -52,7 +53,7 @@ function refreshData() {
             let result = getPolylineDistance(path, data, pointById);
             let slope = result[1] * 100;
             $('#pslo').html(slope.toFixed(2) + '%');
-            $('#palt').html(data._alt.toFixed(2) + '/' + data.alt.toFixed(2));
+            $('#palt').html(data.hasOwnProperty("_alt") ? data._alt.toFixed(2) : "-" + '/' + data.alt.toFixed(2));
             $('#height').html(formatDelta(result[2]));
             $('#distance').html(formatDelta(result[0]));
             $('#ptim').css('color', 'black');
@@ -70,14 +71,21 @@ function refreshData() {
             if (data.alt + antennaHeight >= safetyHeight) {
                 $('.fa-arrow-down').each(function () {this.style.setProperty('color' , '#d9534f', 'important')});
             }
+            let acc = data.hasOwnProperty("acc") ? data.acc : 25;
             if (currentPosition === null) {
-                currentPosition = L.circle([data.lat, data.lng], data.acc).addTo(myMap);
+                currentPosition = L.circle([data.lat, data.lng], acc).addTo(myMap);
                 bounds.extend(currentPosition.getBounds());
                 myMap.fitBounds(bounds);
             }
             else {
                 currentPosition.setLatLng(new L.LatLng(data.lat, data.lng));
-                currentPosition.setRadius(data.acc);
+                currentPosition.setRadius(acc);
+            }
+            if (data.hasOwnProperty("acc")) {
+                currentPosition.setStyle({fillColor: "#3388ff"});
+            }
+            else {
+                currentPosition.setStyle({fillColor: "red"});
             }
         }
         catch (err) {
@@ -96,7 +104,7 @@ function refreshData() {
 function initMap() {
     myMap = L.map('mapid').setView([53.58442963725551, -110.51799774169922], 18);
     L.tileLayer('https://api.tiles.mapbox.com/v4/{id}/{z}/{x}/{y}.png?access_token=pk.eyJ1IjoibWFwYm94IiwiYSI6ImNpejY4NXVycTA2emYycXBndHRqcmZ3N3gifQ.rJcFIG214AriISLbB6B5aw', {
-        maxZoom: 19,
+        maxZoom: 22,
         attribution: 'Map data &copy; <a href="http://openstreetmap.org">OpenStreetMap</a> contributors, ' +
             '<a href="http://creativecommons.org/licenses/by-sa/2.0/">CC-BY-SA</a>, ' +
             'Imagery © <a href="http://mapbox.com">Mapbox</a>',

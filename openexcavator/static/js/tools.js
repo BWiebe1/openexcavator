@@ -9,8 +9,8 @@ let antennaHeight = null;
 
 function initMap() {
 	myMap = L.map('mapid').setView([53.58442963725551, -110.51799774169922], 18);
-	L.tileLayer('/{z}/{x}/{y}.png', {
-		maxZoom: 19,
+	L.tileLayer('https://api.tiles.mapbox.com/v4/{id}/{z}/{x}/{y}.png?access_token=pk.eyJ1IjoibWFwYm94IiwiYSI6ImNpejY4NXVycTA2emYycXBndHRqcmZ3N3gifQ.rJcFIG214AriISLbB6B5aw', {
+		maxZoom: 22,
 		attribution: 'Map data &copy; <a href="http://openstreetmap.org">OpenStreetMap</a> contributors, ' +
 			'<a href="http://creativecommons.org/licenses/by-sa/2.0/">CC-BY-SA</a>, ' +
 			'Imagery © <a href="http://mapbox.com">Mapbox</a>',
@@ -112,7 +112,7 @@ $(document).ready(function() {
 		startData = JSON.parse(sessionStorage.getItem("startData"));
 		setValuesData('start_', startData);
 	}
-	$('#mark').lick(function(){
+	$('#mark').click(function(){
 		startData = JSON.parse(JSON.stringify(currentData)); //"deep" copy for simple data
 		sessionStorage.setItem('startData', JSON.stringify(startData));
 		setValuesData('start_', startData);
