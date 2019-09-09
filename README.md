@@ -11,7 +11,7 @@ Install dependencies:
 ```
 sudo apt-get install python3-pip python3-dev
 sudo apt-get install dnsmasq hostapd #for Wi-Fi management if desired
-sudo pip3 install tornado
+sudo pip3 install tornado utm
 ```
 Since the application has a restart function it needs to run unde the Pi user:
 ```
