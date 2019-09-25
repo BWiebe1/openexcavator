@@ -70,14 +70,15 @@ class DataManager(threading.Thread):
                 try:
                     delta = data["ts"].timestamp() - data["imu_time"]
                     data["delta"] = delta
-                    if delta < -0.5:  # 500 ms
-                        logging.info("stopping GPS thread due to latency %s", delta)
-                        self.gps_client.disconnect_source()
-                        time.sleep( 1)
-                    elif delta > 0.5:
+                    if delta > 0.5:
                         logging.info("stopping IMU thread due to latency %s", delta)
                         self.imu_client.disconnect_source()
                         time.sleep(1)
+                    elif delta < -0.5:  # 500 ms
+                        logging.info("stopping GPS thread due to latency %s", delta)
+                        self.gps_client.disconnect_source()
+                        time.sleep( 1)
+
                 except Exception as exc:
                     logging.warning("cannot determine inter-thread latency: %s", exc)
                     self.gps_client.disconnect_source()

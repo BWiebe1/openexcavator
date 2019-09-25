@@ -46,12 +46,14 @@ class Reach(threading.Thread):
                 if not data:
                     raise Exception("no data received on socket for 3 seconds")
                 buffer += data.decode()  # bytes to str
-                marker = buffer.find(self.message_delimiter)
+                marker = buffer.rfind(self.message_delimiter)
                 if marker > -1:
-                    message = buffer[:marker+1]
-                    buffer = buffer[marker+1:]
+                    message = buffer[marker:]
+                    logging.debug("parsing message from message with len %d, total buffer %d on port %d",
+                                  len(message), len(buffer), self.port)
                     data = self.parse_data(message)
                     self.queue.append(data)
+                    buffer = ""
                 elif len(buffer) > self.tcp_buf_len:
                     logging.warning("no valid GNRMC/IMU data received from %s:%s, clearing buffer",
                                     self.host, self.port)
