@@ -48,9 +48,12 @@ class Reach(threading.Thread):
                 buffer += data.decode()  # bytes to str
                 marker = buffer.rfind(self.message_delimiter)
                 if marker > -1:
-                    message = buffer[marker:]
-                    logging.debug("parsing message from message with len %d, total buffer %d on port %d",
-                                  len(message), len(buffer), self.port)
+                    if len(buffer) > 4096:  # do not process large buffers
+                        message = buffer[marker:]
+                    else:
+                        message = buffer
+                    logging.debug("parsing chunk [%d:%d] (length %d) from buffer on port %d",
+                                  marker, len(buffer), len(message), self.port)
                     data = self.parse_data(message)
                     self.queue.append(data)
                     buffer = ""

@@ -45,7 +45,7 @@ function refreshData() {
                 $('#pacc').css('color', '#CCCC00');
                 fix = 'float';
             }
-            $('#pacc').html(data.hasOwnProperty("acc") ? data.acc.toFixed(2) : 0 + '/' + fix);
+            $('#pacc').html(data.hasOwnProperty("acc") ? data.acc.toFixed(2) + fix : 0 + '/' + fix);
             $('#ptim').html(new Date(data.ts * 1000).toISOString().substr(11, 8));
             if (data.imu_time !== undefined) {
                 $('#ptim').html(new Date(data.ts * 1000).toISOString().substr(11, 8) + "/" + data.delta.toFixed(2));
