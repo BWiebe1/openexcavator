@@ -99,7 +99,7 @@
 			</div>
 			<button type="button" class="btn btn-primary" data-toggle="modal" data-target="#exampleModal">Settings</button>
 		</div>
-		<div class="row text-danger">
+		<div class="row text-success">
 			<div class="col-sm-4 border border-primary">
 				Latitude:&nbsp;<span id="plat" class="text-center">0</span>
 			</div>
@@ -110,7 +110,7 @@
 				Altitude/Bucket:&nbsp;<span id="palt" class="text-center">0</span>
 			</div>
 		</div>
-		<div class="row text-danger">
+		<div class="row text-success">
 			<div class="col-sm-4 border border-primary">
 				Slope:&nbsp;<span id="pslo" class="text-center">0</span>&nbsp;&nbsp;&nbsp;
 				Clock:&nbsp;<span id="ptim" class="text-center">0</span>
@@ -122,38 +122,29 @@
 				Roll/Pitch/Yaw:&nbsp;<span id="rpy" class="text-center">0/0/0</span>
 			</div>
 		</div>
-		<div class="row fill d-flex justify-content-start">
-			<div class="col-2 border border-primary">
-				<p class="text-center" style="margin-bottom: 0; margin-top: 1rem">
-					<i class="fa fa-arrows-v fa-4x" aria-hidden="true" style="color: #0275d8 !important"></i>
-				</p>
-				<p id="height" class="text-center">M</p>
-				<p class="text-center">
-					<i class="fa fa-arrow-down fa-3x" aria-hidden="true"></i>
-				</p>
-				<p class="text-center">
-					<i class="fa fa-arrow-down fa-2x" aria-hidden="true"></i>
-				</p>
-				<p class="text-center">
-					<i class="fa fa-arrow-down" aria-hidden="true"></i>
-				</p>
-				<p class="text-center">
-					<i class="fa fa-arrow-up" aria-hidden="true"></i>
-				</p>
-				<p class="text-center">
-					<i class="fa fa-arrow-up fa-2x" aria-hidden="true"></i>
-				</p>
-				<p class="text-center">
-					<i class="fa fa-arrow-up fa-3x" aria-hidden="true"></i>
-				</p>
-				<p class="text-center" style="margin-bottom: 0">
-					<i class="fa fa-arrows-h fa-4x" aria-hidden="true" style="color: #0275d8 !important"></i>
-				</p>
-				<p id="distance" class="text-center">M</p>
-			</div>
-			<div id="map_wrapper" class="col-10 border border-primary"  style="padding: 0">
+		<div class="row fill d-flex justify-content-start" style="position: relative">
+            <div id="map_wrapper" class="col border border-primary"  style="padding: 0">
 				<div id="mapid" style="width: 100%; height: 100%;"></div>
 			</div>
+			<div style="position: absolute; top: 7px; right: 7px; z-index: 1000">
+				<p class="text-center" style="margin-bottom: 0">
+					<i class="fa fa-arrow-circle-down fa-2x" aria-hidden="true" style="color: #868e96 !important"></i>
+				</p>
+                <p id="height" class="text-center fa-2x" style="margin-bottom: 0">M</p>
+				<p class="text-center" style="margin-bottom: 0">
+					<i class="fa fa-arrow-circle-up fa-2x" aria-hidden="true" style="color: #868e96 !important"></i>
+				</p>
+            </div>
+            <div style="position: absolute; left: 50%; transform: translate(-50%, 0); top: 7px; z-index: 1000">
+				<span class="text-center" style="margin-bottom: 0">
+					<i class="fa fa-arrow-circle-left fa-2x" aria-hidden="true" style="color: #868e96 !important"></i>
+                </span>
+                <span id="distance" class="text-center fa-2x">M</span>
+                <span class="text-center" style="margin-bottom: 0">
+					<i class="fa fa-arrow-circle-right fa-2x" aria-hidden="true" style="color: #868e96 !important"></i>
+				</span>
+            </div>
+        </div>
 		</div>
 	</div>
     {% if error_msg %}
