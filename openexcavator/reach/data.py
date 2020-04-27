@@ -40,26 +40,24 @@ class DataManager(threading.Thread):
             try:
                 data.update(self.gps_queue[-1])
                 data.update(self.imu_queue[-1])
-                if "lat" not in data or "lng" not in data:
-                    time.sleep(1)
-                    continue
-                if not self.utm_zone["num"]:
-                    aux = utm.from_latlon(data["lat"], data["lng"])
-                    self.utm_zone["num"] = aux[2]
-                    self.utm_zone["letter"] = aux[3]
-                if "roll" in data and "pitch" in data and "yaw" in data:
-                    aux = get_new_position_rpy(data["lng"], data["lat"], data["alt"], self.antenna_height,
-                                               data["roll"], data["pitch"], data["yaw"], self.utm_zone)
-                    data.update({
-                        "_lng": data["lng"],
-                        "_lat": data["lat"],
-                        "_alt": data["alt"]
-                    })
-                    data.update({
-                        "lng": aux[0],
-                        "lat": aux[1],
-                        "alt": aux[2]
-                    })
+                if "lat" in data and "lng" in data:
+                    if not self.utm_zone["num"]:
+                        aux = utm.from_latlon(data["lat"], data["lng"])
+                        self.utm_zone["num"] = aux[2]
+                        self.utm_zone["letter"] = aux[3]
+                    if "roll" in data and "pitch" in data and "yaw" in data:
+                        aux = get_new_position_rpy(data["lng"], data["lat"], data["alt"], self.antenna_height,
+                                                   data["roll"], data["pitch"], data["yaw"], self.utm_zone)
+                        data.update({
+                            "_lng": data["lng"],
+                            "_lat": data["lat"],
+                            "_alt": data["alt"]
+                        })
+                        data.update({
+                            "lng": aux[0],
+                            "lat": aux[1],
+                            "alt": aux[2]
+                        })
                 self.data_queue.append(data)
             except (ValueError, IndexError) as exc:
                 data["err"] = "%s" % exc
