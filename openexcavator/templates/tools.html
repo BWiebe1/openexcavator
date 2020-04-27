@@ -21,7 +21,7 @@
     </script>
 </head>
 <body>
-	<div class="container small d-flex h-100 flex-column">
+	<div class="container small d-flex h-100 flex-column" style="min-width: 100%; min-height: 100%">
 		<div class="row">
 			<div class="col">
 				<h3 class="text-center"><a href="/">Main</a></h3>
@@ -33,60 +33,48 @@
             &nbsp;
             <button type="button" class="btn btn-success" id="export">Export</button>
 		</div>
-		<div class="row">
-			<div class="col border border-primary">
-				Start Latitude:
-				<p id="start_lat" class="text-center">0</p>
+		<div class="row text-danger">
+			<div class="col-sm-4 border border-primary">
+				Start Latitude:&nbsp;<span id="start_lat" class="text-center">0</span>
 			</div>
-			<div class="col border border-primary">
-				Start Longitude: <br>
-				<p id="start_lng" class="text-center">0</p>
+			<div class="col-sm-4 border border-primary">
+				Start Longitude:&nbsp;<span id="start_lng" class="text-center">0</span>
 			</div>
-			<div class="col border border-primary">
-				Start Altitude:
-				<p id="start_alt" class="text-center">0</p>
+			<div class="col-sm-4 border border-primary">
+				Start Altitude:&nbsp;<span id="start_alt" class="text-center">0</span>
 			</div>
 		</div>
-		<div class="row">
-			<div class="col border border-primary">
-				Acc/Quality: <br>
-				<p id="start_acc" class="text-center">0</p>
+		<div class="row text-danger">
+			<div class="col-sm-4 border border-primary">
+				Acc/Quality:&nbsp;<span id="start_acc" class="text-center">0</span>
 			</div>
-			<div class="col border border-primary">
-				Start Clock: <br>
-				<p id="start_tim" class="text-center">0</p>
+			<div class="col-sm-4 border border-primary">
+				Start Clock:&nbsp;<span id="start_tim" class="text-center">0</span>
 			</div>
-			<div class="col-4 border border-primary">
-				Rise / Run:
-				<p id="rise_run" class="text-center"></p>
+			<div class="col-sm-4 border border-primary">
+				Rise / Run:&nbsp;<span id="rise_run" class="text-center"></span>
 			</div>
 		</div>
-		<div class="row">
-			<div class="col-4 border border-primary">
-				Current Lat:
-				<p id="current_lat" class="text-center">0</p>
+		<div class="row text-success">
+			<div class="col-sm-4 border border-primary">
+				Current Lat:&nbsp;<span id="current_lat" class="text-center">0</span>
 			</div>
-			<div class="col-4 border border-primary">
-				Current Lon: <br>
-				<p id="current_lng" class="text-center">0</p>
+			<div class="col-sm-4 border border-primary">
+				Current Lon:&nbsp;<span id="current_lng" class="text-center">0</span>
 			</div>
-			<div class="col-4 border border-primary">
-				Current Alt:
-				<p id="current_alt" class="text-center">0</p>
+			<div class="col-sm-4 border border-primary">
+				Current Alt:&nbsp;<span id="current_alt" class="text-center">0</span>
 			</div>
 		</div>
-		<div class="row">
-			<div class="col-4 border border-primary">
-				Acc/Quality: <br>
-				<p id="current_acc" class="text-center">0</p>
+		<div class="row text-success">
+			<div class="col-sm-4 border border-primary">
+				Acc/Quality:&nbsp;<span id="current_acc" class="text-center">0</span>
 			</div>
-			<div class="col-4 border border-primary">
-				Current Clock: <br>
-				<p id="current_tim" class="text-center">0</p>
+			<div class="col-sm-4 border border-primary">
+				Current Clock:&nbsp;<span id="current_tim" class="text-center">0</span>
 			</div>
-			<div class="col-4 border border-primary">
-				Slope: <br>
-				<p id="slope" class="text-center"></p>
+			<div class="col-sm-4 border border-primary">
+				Slope:<span id="slope" class="text-center"></span>
 			</div>
 		</div>
 		<div class="row fill d-flex justify-content-start">

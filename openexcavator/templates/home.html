@@ -89,7 +89,7 @@
 	    </div>
 	  </div>
 	</div>
-	<div class="container small d-flex h-100 flex-column">
+	<div class="container small d-flex flex-column" style="min-width: 100%; min-height: 100%">
 		<div class="row">
 			<div class="col">
 				<h3 class="text-center"><a href="/">Main</a></h3>
@@ -99,32 +99,27 @@
 			</div>
 			<button type="button" class="btn btn-primary" data-toggle="modal" data-target="#exampleModal">Settings</button>
 		</div>
-		<div class="row">
-			<div class="col border border-primary">
-				Latitude:
-				<p id="plat" class="text-center">0</p>
+		<div class="row text-danger">
+			<div class="col-sm-4 border border-primary">
+				Latitude:&nbsp;<span id="plat" class="text-center">0</span>
 			</div>
-			<div class="col border border-primary">
-				Longitude: <br>
-				<p id="plng" class="text-center">0</p>
+			<div class="col-sm-4 border border-primary">
+                Longitude:&nbsp;<span id="plng" class="text-center">0</span>
 			</div>
-			<div class="col border border-primary">
-				Altitude/Bucket:
-				<p id="palt" class="text-center">0</p>
+			<div class="col-sm-4 border border-primary">
+				Altitude/Bucket:&nbsp;<span id="palt" class="text-center">0</span>
 			</div>
 		</div>
-		<div class="row">
-			<div class="col-4 border border-primary">
-				Slope: <span id="pslo" class="text-center">0</span><br>
-				Clock: <span id="ptim" class="text-center">0</span>
+		<div class="row text-danger">
+			<div class="col-sm-4 border border-primary">
+				Slope:&nbsp;<span id="pslo" class="text-center">0</span>&nbsp;&nbsp;&nbsp;
+				Clock:&nbsp;<span id="ptim" class="text-center">0</span>
 			</div>
-			<div class="col-4 border border-primary">
-				Accuracy/Quality: <br>
-				<p id="pacc" class="text-center">0</p>
+			<div class="col-sm-4 border border-primary">
+				Accuracy/Quality:&nbsp;<span id="pacc" class="text-center">0</span>
 			</div>
-			<div class="col-4 border border-primary">
-				Roll/Pitch/Yaw:<br>
- 				<p id="rpy" class="text-center">0/0/0</p>				
+			<div class="col-sm-4 border border-primary">
+				Roll/Pitch/Yaw:&nbsp;<span id="rpy" class="text-center">0/0/0</span>
 			</div>
 		</div>
 		<div class="row fill d-flex justify-content-start">
