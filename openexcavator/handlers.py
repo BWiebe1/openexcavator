@@ -8,7 +8,7 @@ import json
 import logging
 import subprocess
 import tornado.web
-from tornado.gen import coroutine, sleep
+from tornado.gen import coroutine
 from tornado.escape import url_escape
 
 import utils

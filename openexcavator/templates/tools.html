@@ -1,85 +1,61 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-	<title>Excavator Tools</title>
-	<meta name="viewport" content="initial-scale=1.0">
-	<meta charset="utf-8">
-    <link rel="stylesheet" href="/static/css/fontawesome.css" />
-	<link rel="stylesheet" href="/static/css/bootstrap.min.css" />
-	<link rel="stylesheet" href="/static/css/leaflet.css" />
-	<link rel="stylesheet" href="/static/css/home.css" />
-	<script	src="/static/js/jquery.min.js"></script>
-	<script src="/static/js/popper.js"></script>
-	<script	src="/static/js/proj.js"></script>
-	<script	src="/static/js/bootstrap.min.js"></script>
-	<script	src="/static/js/lodash.min.js"></script>
-	<script src="/static/js/leaflet.js"></script>
-	<script src="/static/js/common.js"></script>
-	<script src="/static/js/tools.js"></script>
+{% extends base.html %}
+{% block title %}OpenExcavator Tools{% end %}
+{% block custom_js %}
+    <script src="/static/js/tools.js"></script>
     <script>
         window.antennaHeight = "{{config['antenna_height']}}";
     </script>
-</head>
-<body>
-	<div class="container small d-flex h-100 flex-column" style="min-width: 100%; min-height: 100%">
-		<div class="row">
-			<div class="col">
-				<h3 class="text-center"><a href="/">Main</a></h3>
-			</div>
-			<div class="col">
-				<h3 class="text-center"><a href="/tools">Tools</a></h3>
-			</div>
-			<button type="button" class="btn btn-primary" id="mark">Start</button>
-            &nbsp;
+{% end %}
+{% block content %}
+    <div class="row text-success">
+        <div class="col-sm-4 border border-primary">
+            Start Latitude:&nbsp;<span id="start_lat" class="text-center">0</span>
+        </div>
+        <div class="col-sm-4 border border-primary">
+            Start Longitude:&nbsp;<span id="start_lng" class="text-center">0</span>
+        </div>
+        <div class="col-sm-4 border border-primary">
+            Start Altitude:&nbsp;<span id="start_alt" class="text-center">0</span>
+        </div>
+    </div>
+    <div class="row text-success">
+        <div class="col-sm-4 border border-primary">
+            Acc/Quality:&nbsp;<span id="start_acc" class="text-center">0</span>
+        </div>
+        <div class="col-sm-4 border border-primary">
+            Start Clock:&nbsp;<span id="start_tim" class="text-center">0</span>
+        </div>
+        <div class="col-sm-4 border border-primary">
+            Rise / Run:&nbsp;<span id="rise_run" class="text-center"></span>
+        </div>
+    </div>
+    <div class="row text-danger">
+        <div class="col-sm-4 border border-primary">
+            Current Lat:&nbsp;<span id="current_lat" class="text-center">0</span>
+        </div>
+        <div class="col-sm-4 border border-primary">
+            Current Lon:&nbsp;<span id="current_lng" class="text-center">0</span>
+        </div>
+        <div class="col-sm-4 border border-primary">
+            Current Alt:&nbsp;<span id="current_alt" class="text-center">0</span>
+        </div>
+    </div>
+    <div class="row text-danger">
+        <div class="col-sm-4 border border-primary">
+            Acc/Quality:&nbsp;<span id="current_acc" class="text-center">0</span>
+        </div>
+        <div class="col-sm-4 border border-primary">
+            Current Clock:&nbsp;<span id="current_tim" class="text-center">0</span>
+        </div>
+        <div class="col-sm-4 border border-primary">
+            Slope:<span id="slope" class="text-center"></span>
+        </div>
+    </div>
+    <div class="row fill d-flex justify-content-start" style="position:relative;">
+        <div id="mapid" style="width: 100%; height: 100%;"></div>
+        <div style="position: absolute; top: 7px; right: 7px; z-index: 1000">
+            <button type="button" class="btn btn-primary" id="mark">Start</button>
             <button type="button" class="btn btn-success" id="export">Export</button>
-		</div>
-		<div class="row text-success">
-			<div class="col-sm-4 border border-primary">
-				Start Latitude:&nbsp;<span id="start_lat" class="text-center">0</span>
-			</div>
-			<div class="col-sm-4 border border-primary">
-				Start Longitude:&nbsp;<span id="start_lng" class="text-center">0</span>
-			</div>
-			<div class="col-sm-4 border border-primary">
-				Start Altitude:&nbsp;<span id="start_alt" class="text-center">0</span>
-			</div>
-		</div>
-		<div class="row text-success">
-			<div class="col-sm-4 border border-primary">
-				Acc/Quality:&nbsp;<span id="start_acc" class="text-center">0</span>
-			</div>
-			<div class="col-sm-4 border border-primary">
-				Start Clock:&nbsp;<span id="start_tim" class="text-center">0</span>
-			</div>
-			<div class="col-sm-4 border border-primary">
-				Rise / Run:&nbsp;<span id="rise_run" class="text-center"></span>
-			</div>
-		</div>
-		<div class="row text-danger">
-			<div class="col-sm-4 border border-primary">
-				Current Lat:&nbsp;<span id="current_lat" class="text-center">0</span>
-			</div>
-			<div class="col-sm-4 border border-primary">
-				Current Lon:&nbsp;<span id="current_lng" class="text-center">0</span>
-			</div>
-			<div class="col-sm-4 border border-primary">
-				Current Alt:&nbsp;<span id="current_alt" class="text-center">0</span>
-			</div>
-		</div>
-		<div class="row text-danger">
-			<div class="col-sm-4 border border-primary">
-				Acc/Quality:&nbsp;<span id="current_acc" class="text-center">0</span>
-			</div>
-			<div class="col-sm-4 border border-primary">
-				Current Clock:&nbsp;<span id="current_tim" class="text-center">0</span>
-			</div>
-			<div class="col-sm-4 border border-primary">
-				Slope:<span id="slope" class="text-center"></span>
-			</div>
-		</div>
-		<div class="row fill d-flex justify-content-start">
-			<div id="mapid" style="width: 100%; height: 100%;"></div>
-		</div>
-	</div>
-</body>
-</html>
+        </div>
+    </div>
+{% end %}

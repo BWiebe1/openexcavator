@@ -1,154 +1,52 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-	<title>Excavator</title>
-	<meta name="viewport" content="initial-scale=1.0">
-	<meta charset="utf-8">
-    <link rel="stylesheet" href="/static/css/fontawesome.css" />
-	<link rel="stylesheet" href="/static/css/bootstrap.min.css" />
-	<link rel="stylesheet" href="/static/css/leaflet.css" />
-	<link rel="stylesheet" href="/static/css/home.css" />
-	<script	src="/static/js/jquery.min.js"></script>
-	<script src="/static/js/popper.js"></script>
-	<script	src="/static/js/proj.js"></script>
-	<script	src="/static/js/bootstrap.min.js"></script>
-	<script	src="/static/js/lodash.min.js"></script>
-	<script src="/static/js/leaflet.js"></script>
-	<script src="/static/js/common.js"></script>
-	<script src="/static/js/home.js"></script>
-</head>
-<body>
-	<div class="modal fade" id="exampleModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
-	  <div class="modal-dialog" role="document">
-	    <div class="modal-content">
-	      <div class="modal-header">
-	        <h5 class="modal-title" id="exampleModalLabel">Update settings</h5>
-	        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-	          <span aria-hidden="true">&times;</span>
-	        </button>
-	      </div>
-          <form enctype="multipart/form-data" action="/update" method="post">
-          {% module xsrf_form_html() %}
-	      <div class="modal-body">
-                <div class="input-group">
-			    	<span class="input-group-addon">Wi-Fi SSID</span>
-			    	<input id="wifi_ssid" type="text" class="form-control" name="wifi_ssid" placeholder="wifi_ssid" value="{{config['wifi_ssid']}}">
-	          	</div>
-	  	    	<div class="input-group">
-			    	<span class="input-group-addon">Wi-Fi PWD</span>
-			    	<input id="wifi_psk" type="password" class="form-control" name="wifi_psk" placeholder="wifi_psk" value="{{config['wifi_psk']}}">
-	          	</div>
-	  	      	<div class="input-group">
-			    	<span class="input-group-addon">GPS Host</span>
-			    	<input id="gps_host" type="text" class="form-control" name="gps_host" placeholder="gps_host" value="{{config['gps_host']}}">
-	          	</div>
-	  	    	<div class="input-group">
-			    	<span class="input-group-addon">GPS Port</span>
-			    	<input id="gps_port" type="text" class="form-control" name="gps_port" placeholder="gps_port" value="{{config['gps_port']}}">
-	          	</div>
-	  	      	<div class="input-group">
-			    	<span class="input-group-addon">IMU Host</span>
-			    	<input id="imu_host" type="text" class="form-control" name="imu_host" placeholder="imu_host" value="{{config['imu_host']}}">
-	          	</div>
-	  	    	<div class="input-group">
-			    	<span class="input-group-addon">IMU Port</span>
-			    	<input id="imu_port" type="text" class="form-control" name="imu_port" placeholder="imu_port" value="{{config['imu_port']}}">
-	          	</div>
-	          	
-		      	<div class="input-group">
-			    	<span class="input-group-addon">Start Altitude</span>
-			    	<input id="start_altitude" type="text" class="form-control" name="start_altitude" placeholder="start_altitude" value="{{config['start_altitude']}}">
-	          	</div>
-		      	<div class="input-group">
-			    	<span class="input-group-addon">Stop Altitude</span>
-			    	<input id="stop_altitude" type="text" class="form-control" name="stop_altitude" placeholder="stop_altitude" value="{{config['stop_altitude']}}">
-	          	</div>
-		      	<div class="input-group">
-			    	<span class="input-group-addon">Antenna Height</span>
-			    	<input id="antenna_height" type="text" class="form-control" name="antenna_height" placeholder="antenna_height" value="{{config['antenna_height']}}">
-	          	</div>
-		      	<div class="input-group">
-			    	<span class="input-group-addon">Safety Height</span>
-			    	<input id="safety_height" type="text" class="form-control" name="safety_height" placeholder="safety_height" value="{{config['safety_height']}}">
-	          	</div>
-		      	<div class="input-group">
-			    	<span class="input-group-addon">Safety Depth</span>
-			    	<input id="safety_depth" type="text" class="form-control" name="safety_depth" placeholder="safety_depth" value="{{config['safety_depth']}}">
-	          	</div>
-		      	<div class="input-group">
-			    	<span class="input-group-addon">GeoJSON</span>
-			    	<input id="path" type="file" class="form-control" name="path" placeholder="path" data-text="{{config['path']}}">
-	          	</div>
-		      </div>
-		      <div class="modal-footer">
-		        <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
-		        <button type="submit" class="btn btn-primary" name="action" value="save">Save changes</button>
-		        <button type="submit" class="btn btn-primary" name="action" value="restart">Restart</button>
-		      </div>
-	      </form>
-	    </div>
-	  </div>
-	</div>
-	<div class="container small d-flex flex-column" style="min-width: 100%; min-height: 100%">
-		<div class="row">
-			<div class="col">
-				<h3 class="text-center"><a href="/">Main</a></h3>
-			</div>
-			<div class="col">
-				<h3 class="text-center"><a href="/tools">Tools</a></h3>
-			</div>
-			<button type="button" class="btn btn-primary" data-toggle="modal" data-target="#exampleModal">Settings</button>
-		</div>
-		<div class="row text-success">
-			<div class="col-sm-4 border border-primary">
-				Latitude:&nbsp;<span id="plat" class="text-center">0</span>
-			</div>
-			<div class="col-sm-4 border border-primary">
-                Longitude:&nbsp;<span id="plng" class="text-center">0</span>
-			</div>
-			<div class="col-sm-4 border border-primary">
-				Altitude/Bucket:&nbsp;<span id="palt" class="text-center">0</span>
-			</div>
-		</div>
-		<div class="row text-success">
-			<div class="col-sm-4 border border-primary">
-				Slope:&nbsp;<span id="pslo" class="text-center">0</span>&nbsp;&nbsp;&nbsp;
-				Clock:&nbsp;<span id="ptim" class="text-center">0</span>
-			</div>
-			<div class="col-sm-4 border border-primary">
-				Accuracy/Quality:&nbsp;<span id="pacc" class="text-center">0</span>
-			</div>
-			<div class="col-sm-4 border border-primary">
-				Roll/Pitch/Yaw:&nbsp;<span id="rpy" class="text-center">0/0/0</span>
-			</div>
-		</div>
-		<div class="row fill d-flex justify-content-start" style="position: relative">
-            <div id="map_wrapper" class="col border border-primary"  style="padding: 0">
-				<div id="mapid" style="width: 100%; height: 100%;"></div>
-			</div>
-			<div style="position: absolute; top: 7px; right: 7px; z-index: 1000">
-				<p class="text-center" style="margin-bottom: 0">
-					<i class="fa fa-arrow-circle-down fa-2x" aria-hidden="true" style="color: #868e96 !important"></i>
-				</p>
-                <p id="height" class="text-center fa-2x" style="margin-bottom: 0">M</p>
-				<p class="text-center" style="margin-bottom: 0">
-					<i class="fa fa-arrow-circle-up fa-2x" aria-hidden="true" style="color: #868e96 !important"></i>
-				</p>
-            </div>
-            <div style="position: absolute; left: 50%; transform: translate(-50%, 0); top: 7px; z-index: 1000">
-				<span class="text-center" style="margin-bottom: 0">
-					<i class="fa fa-arrow-circle-left fa-2x" aria-hidden="true" style="color: #868e96 !important"></i>
-                </span>
-                <span id="distance" class="text-center fa-2x">M</span>
-                <span class="text-center" style="margin-bottom: 0">
-					<i class="fa fa-arrow-circle-right fa-2x" aria-hidden="true" style="color: #868e96 !important"></i>
-				</span>
-            </div>
+{% extends base.html %}
+{% block custom_js %}
+    <script src="/static/js/home.js"></script>
+{% end %}
+{% block content %}
+    <div class="row text-success">
+        <div class="col-sm-4 border border-primary">
+            Latitude:&nbsp;<span id="plat" class="text-center">0</span>
         </div>
-		</div>
-	</div>
-    {% if error_msg %}
-    	<p class="message">{{error_msg}}</p>
-    {% end %}
-</body>
-</html>
+        <div class="col-sm-4 border border-primary">
+            Longitude:&nbsp;<span id="plng" class="text-center">0</span>
+        </div>
+        <div class="col-sm-4 border border-primary">
+            Altitude/Bucket:&nbsp;<span id="palt" class="text-center">0</span>
+        </div>
+    </div>
+    <div class="row text-success">
+        <div class="col-sm-4 border border-primary">
+            Slope:&nbsp;<span id="pslo" class="text-center">0</span>&nbsp;&nbsp;&nbsp;
+            Clock:&nbsp;<span id="ptim" class="text-center">0</span>
+        </div>
+        <div class="col-sm-4 border border-primary">
+            Accuracy/Quality:&nbsp;<span id="pacc" class="text-center">0</span>
+        </div>
+        <div class="col-sm-4 border border-primary">
+            Roll/Pitch/Yaw:&nbsp;<span id="rpy" class="text-center">0/0/0</span>
+        </div>
+    </div>
+    <div class="row fill d-flex justify-content-start" style="position: relative">
+        <div id="map_wrapper" class="col border border-primary"  style="padding: 0">
+            <div id="mapid" style="width: 100%; height: 100%;"></div>
+        </div>
+        <div style="position: absolute; top: 7px; right: 7px; z-index: 1000">
+            <p class="text-center" style="margin-bottom: 0">
+                <i class="fa fa-arrow-circle-down fa-2x" aria-hidden="true" style="color: #868e96 !important"></i>
+            </p>
+            <p id="height" class="text-center fa-2x" style="margin-bottom: 0">M</p>
+            <p class="text-center" style="margin-bottom: 0">
+                <i class="fa fa-arrow-circle-up fa-2x" aria-hidden="true" style="color: #868e96 !important"></i>
+            </p>
+        </div>
+        <div style="position: absolute; left: 50%; transform: translate(-50%, 0); top: 7px; z-index: 1000">
+            <span class="text-center" style="margin-bottom: 0">
+                <i class="fa fa-arrow-circle-left fa-2x" aria-hidden="true" style="color: #868e96 !important"></i>
+            </span>
+            <span id="distance" class="text-center fa-2x">M</span>
+            <span class="text-center" style="margin-bottom: 0">
+                <i class="fa fa-arrow-circle-right fa-2x" aria-hidden="true" style="color: #868e96 !important"></i>
+            </span>
+        </div>
+    </div>
+{% end %}

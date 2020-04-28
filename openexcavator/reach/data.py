@@ -75,7 +75,7 @@ class DataManager(threading.Thread):
                     elif delta < -0.5:  # 500 ms
                         logging.info("stopping GPS thread due to latency %s", delta)
                         self.gps_client.disconnect_source()
-                        time.sleep( 1)
+                        time.sleep(1)
 
                 except Exception as exc:
                     logging.warning("cannot determine inter-thread latency: %s", exc)

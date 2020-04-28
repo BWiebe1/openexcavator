@@ -2,12 +2,26 @@
 <html lang="en">
 	<head>
 		<title>Redirecting to homepage</title>
-		<meta http-equiv="refresh" content="5;url=/" />
 	</head>
 	<body>
-		<p>The application is being restarted; you will be redirected automatically in 5 seconds.</p>
+		<p id="restart-message" style="color: green"></p>
 		 {% if error_message %}
             <p style="color: red">{{error_message}}</p>
          {% end %}
+        <script>
+            let seconds = 5;
+            function countdown() {
+                let rst = document.getElementById("restart-message");
+                seconds = seconds - 1;
+                if (seconds <=0) {
+                    return window.location.replace("/");
+                }
+                let msg = "The application is being restarted; you will be redirected automatically in " + seconds;
+                msg += seconds != 1 ? " seconds." : " second.";
+                rst.innerText = msg;
+                setTimeout(countdown, 1000);
+            }
+            countdown();
+        </script>
 	</body>
 </html>

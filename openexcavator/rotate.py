@@ -29,7 +29,7 @@ def vm_mult(offset, rotate):
      */
     """
     arr = [0, 1, 2]
-    return list(map(lambda x: x_mult(offset,rotate[x]), arr))
+    return list(map(lambda x: x_mult(offset, rotate[x]), arr))
 
 
 def setup_rotation_matrix(angle, vec):
@@ -42,11 +42,11 @@ def setup_rotation_matrix(angle, vec):
      * @returns {Matrix3D} - the rotation matrix
      */
     """
-    # Leaving L in for re-usability, but it should always be 1 in our case
+    # Leaving l in for re-usability, but it should always be 1 in our case
     u = vec[0]
     v = vec[1]
     w = vec[2]
-    L = (u*u + v * v + w * w)
+    l = (u*u + v * v + w * w)
     u2 = u * u
     v2 = v * v
     w2 = w * w
@@ -56,17 +56,17 @@ def setup_rotation_matrix(angle, vec):
         [-1, -1, -1],
         [-1, -1, -1]
     ]
-    rot_mat[0][0] = (u2 + (v2 + w2) * math.cos(angle)) / L
-    rot_mat[0][1] = (u * v * (1 - math.cos(angle)) - w * math.sqrt(L) * math.sin(angle)) / L
-    rot_mat[0][2] = (u * w * (1 - math.cos(angle)) + v * math.sqrt(L) * math.sin(angle)) / L
+    rot_mat[0][0] = (u2 + (v2 + w2) * math.cos(angle)) / l
+    rot_mat[0][1] = (u * v * (1 - math.cos(angle)) - w * math.sqrt(l) * math.sin(angle)) / l
+    rot_mat[0][2] = (u * w * (1 - math.cos(angle)) + v * math.sqrt(l) * math.sin(angle)) / l
 
-    rot_mat[1][0] = (u * v * (1 - math.cos(angle)) + w * math.sqrt(L) * math.sin(angle)) / L
-    rot_mat[1][1] = (v2 + (u2 + w2) * math.cos(angle)) / L
-    rot_mat[1][2] = (v * w * (1 - math.cos(angle)) - u * math.sqrt(L) * math.sin(angle)) / L
+    rot_mat[1][0] = (u * v * (1 - math.cos(angle)) + w * math.sqrt(l) * math.sin(angle)) / l
+    rot_mat[1][1] = (v2 + (u2 + w2) * math.cos(angle)) / l
+    rot_mat[1][2] = (v * w * (1 - math.cos(angle)) - u * math.sqrt(l) * math.sin(angle)) / l
 
-    rot_mat[2][0] = (u * w * (1 - math.cos(angle)) - v * math.sqrt(L) * math.sin(angle)) / L
-    rot_mat[2][1] = (v * w * (1 - math.cos(angle)) + u * math.sqrt(L) * math.sin(angle)) / L
-    rot_mat[2][2] = (w2 + (u2 + v2) * math.cos(angle)) / L
+    rot_mat[2][0] = (u * w * (1 - math.cos(angle)) - v * math.sqrt(l) * math.sin(angle)) / l
+    rot_mat[2][1] = (v * w * (1 - math.cos(angle)) + u * math.sqrt(l) * math.sin(angle)) / l
+    rot_mat[2][2] = (w2 + (u2 + v2) * math.cos(angle)) / l
     return rot_mat
 
 

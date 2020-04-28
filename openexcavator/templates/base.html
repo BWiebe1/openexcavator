@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<title>{% block title %}OpenExcavator{% end %}</title>
+    {% block head %}
+        <meta name="viewport" content="initial-scale=1.0">
+        <meta charset="utf-8">
+        <link rel="stylesheet" href="/static/css/fontawesome.css" />
+        <link rel="stylesheet" href="/static/css/bootstrap.min.css" />
+        <link rel="stylesheet" href="/static/css/leaflet.css" />
+        <link rel="stylesheet" href="/static/css/home.css" />
+        <script	src="/static/js/jquery.min.js"></script>
+        <script src="/static/js/popper.js"></script>
+        <script	src="/static/js/proj.js"></script>
+        <script	src="/static/js/bootstrap.min.js"></script>
+        <script	src="/static/js/lodash.min.js"></script>
+        <script src="/static/js/leaflet.js"></script>
+        <script src="/static/js/common.js"></script>
+    {% end %}
+    {% block custom_js %}
+    {% end %}
+</head>
+<body>
+    {% block settings %}
+        <div class="modal fade" id="exampleModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+          <div class="modal-dialog" role="document">
+            <div class="modal-content">
+              <div class="modal-header">
+                <h5 class="modal-title" id="exampleModalLabel">Update settings</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                  <span aria-hidden="true">&times;</span>
+                </button>
+              </div>
+              <form enctype="multipart/form-data" action="/update" method="post">
+              {% module xsrf_form_html() %}
+              <div class="modal-body">
+                    <div class="input-group">
+                        <span class="input-group-addon">Wi-Fi SSID</span>
+                        <input id="wifi_ssid" type="text" class="form-control" name="wifi_ssid" placeholder="wifi_ssid" value="{{config['wifi_ssid']}}">
+                    </div>
+                    <div class="input-group">
+                        <span class="input-group-addon">Wi-Fi PWD</span>
+                        <input id="wifi_psk" type="password" class="form-control" name="wifi_psk" placeholder="wifi_psk" value="{{config['wifi_psk']}}">
+                    </div>
+                    <div class="input-group">
+                        <span class="input-group-addon">GPS Host</span>
+                        <input id="gps_host" type="text" class="form-control" name="gps_host" placeholder="gps_host" value="{{config['gps_host']}}">
+                    </div>
+                    <div class="input-group">
+                        <span class="input-group-addon">GPS Port</span>
+                        <input id="gps_port" type="text" class="form-control" name="gps_port" placeholder="gps_port" value="{{config['gps_port']}}">
+                    </div>
+                    <div class="input-group">
+                        <span class="input-group-addon">IMU Host</span>
+                        <input id="imu_host" type="text" class="form-control" name="imu_host" placeholder="imu_host" value="{{config['imu_host']}}">
+                    </div>
+                    <div class="input-group">
+                        <span class="input-group-addon">IMU Port</span>
+                        <input id="imu_port" type="text" class="form-control" name="imu_port" placeholder="imu_port" value="{{config['imu_port']}}">
+                    </div>
+
+                    <div class="input-group">
+                        <span class="input-group-addon">Start Altitude</span>
+                        <input id="start_altitude" type="text" class="form-control" name="start_altitude" placeholder="start_altitude" value="{{config['start_altitude']}}">
+                    </div>
+                    <div class="input-group">
+                        <span class="input-group-addon">Stop Altitude</span>
+                        <input id="stop_altitude" type="text" class="form-control" name="stop_altitude" placeholder="stop_altitude" value="{{config['stop_altitude']}}">
+                    </div>
+                    <div class="input-group">
+                        <span class="input-group-addon">Antenna Height</span>
+                        <input id="antenna_height" type="text" class="form-control" name="antenna_height" placeholder="antenna_height" value="{{config['antenna_height']}}">
+                    </div>
+                    <div class="input-group">
+                        <span class="input-group-addon">Safety Height</span>
+                        <input id="safety_height" type="text" class="form-control" name="safety_height" placeholder="safety_height" value="{{config['safety_height']}}">
+                    </div>
+                    <div class="input-group">
+                        <span class="input-group-addon">Safety Depth</span>
+                        <input id="safety_depth" type="text" class="form-control" name="safety_depth" placeholder="safety_depth" value="{{config['safety_depth']}}">
+                    </div>
+                    <div class="input-group">
+                        <span class="input-group-addon">GeoJSON</span>
+                        <input id="path" type="file" class="form-control" name="path" data-text="{{config['path']}}">
+                    </div>
+                  </div>
+                  <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                    <button type="submit" class="btn btn-primary" name="action" value="save">Save changes</button>
+                    <button type="submit" class="btn btn-primary" name="action" value="restart">Restart</button>
+                  </div>
+              </form>
+            </div>
+          </div>
+        </div>
+    {% end %}
+	<div class="container small d-flex flex-column" style="min-width: 100%; min-height: 100%">
+        {% block nav %}
+            <div class="row bg-dark">
+                <a class="btn btn-info" style="width: 100px;" role="button" href="/">Main</a>
+                <a class="btn btn-info" style="width: 100px;" role="button" href="/tools">Tools</a>
+                <button type="button" class="btn btn-primary" style="width: 100px;" data-toggle="modal" data-target="#exampleModal">Settings</button>
+            </div>
+        {% end %}
+        {% block content %}
+            <p>OpenExcavator</p>
+        {% end %}
+    </div>
+</body>
+</html>
