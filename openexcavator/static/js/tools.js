@@ -27,7 +27,6 @@ function initMap() {
 	}
 	myMap.on('click', onMapClick);
 	myMap.invalidateSize();
-	refreshPosition();
 }
 
 function download(filename, text) {
@@ -61,56 +60,84 @@ function setValuesData(prefix, data) {
 	$('#' + prefix + 'tim').css('color', 'black');
 }
 
-function refreshPosition() {
-	let jqxhr = $.get( "/data").done(function (rawData) {
-		let data = JSON.parse(rawData);
-		try {
-			setValuesData('current_', data);
-			if (startData !== null) {
-				let latlngs = [new L.LatLng(startData.lat, startData.lng),
-					new L.LatLng(data.lat, data.lng)];
-				if (polyline === null) {
-					polyline = L.polyline(latlngs, {color: 'red'}).addTo(myMap);
-				}
-				else {
-					polyline.setLatLngs(latlngs);
-				}
-				if (utmZone.num === undefined) {
-					let aux = fromLatLon(startData.lat, startData.lng);
-					utmZone.num = aux.zoneNum;
-					utmZone.letter = aux.zoneLetter;
-				}
-				let projStartCoords = fromLatLon(startData.lat, startData.lng, utmZone.num);
-				let projCoords = fromLatLon(data.lat, data.lng, utmZone.num);
-				let run = pointToPointDistance(projStartCoords.easting, projStartCoords.northing, 0, projCoords.easting, projCoords.northing, 0);
-				let rise = data.alt - startData.alt;
-				$('#rise_run').html(rise.toFixed(2) + '/' + run.toFixed(2));
-				let slope = rise / run;
-				slope = slope * 100;
-				slope = slope.toFixed(2) + '%';
-				$('#slope').html(slope);
-			}
-			if (currentPosition === null) {
-				currentPosition = L.circle([data.lat, data.lng], data.acc).addTo(myMap);
-				myMap.fitBounds(currentPosition.getBounds());
+function processData(raw_data) {
+	let data = JSON.parse(raw_data);
+	try {
+		setValuesData('current_', data);
+		if (startData !== null) {
+			let latlngs = [new L.LatLng(startData.lat, startData.lng),
+				new L.LatLng(data.lat, data.lng)];
+			if (polyline === null) {
+				polyline = L.polyline(latlngs, {color: 'red'}).addTo(myMap);
 			}
 			else {
-				currentPosition.setLatLng(new L.LatLng(data.lat, data.lng));
-				currentPosition.setRadius(data.acc);
+				polyline.setLatLngs(latlngs);
 			}
-			currentData = data;
+			if (utmZone.num === undefined) {
+				let aux = fromLatLon(startData.lat, startData.lng);
+				utmZone.num = aux.zoneNum;
+				utmZone.letter = aux.zoneLetter;
+			}
+			let projStartCoords = fromLatLon(startData.lat, startData.lng, utmZone.num);
+			let projCoords = fromLatLon(data.lat, data.lng, utmZone.num);
+			let run = pointToPointDistance(projStartCoords.easting, projStartCoords.northing, 0, projCoords.easting, projCoords.northing, 0);
+			let rise = data.alt - startData.alt;
+			$('#rise_run').html(rise.toFixed(2) + '/' + run.toFixed(2));
+			let slope = rise / run;
+			slope = slope * 100;
+			slope = slope.toFixed(2) + '%';
+			$('#slope').html(slope);
 		}
-		catch (err) {
-			$('#ptim').css('color', 'red');
-			console.log('cannot parse position data: ' + data + ', error: ' + err.message); 
+		if (currentPosition === null) {
+			currentPosition = L.circle([data.lat, data.lng], data.acc).addTo(myMap);
+			myMap.fitBounds(currentPosition.getBounds());
 		}
-		setTimeout(refreshPosition, 100);
-	})
-	.fail(function() {
+		else {
+			currentPosition.setLatLng(new L.LatLng(data.lat, data.lng));
+			currentPosition.setRadius(data.acc);
+		}
+		currentData = data;
+	}
+	catch (err) {
 		$('#ptim').css('color', 'red');
-		console.log('cannot retrieve position data');
-		setTimeout(refreshPosition, 3000);
-	});
+		console.log('cannot parse position data: ' + data + ', error: ' + err.message);
+	}
+}
+
+function connect() {
+    let ws_url = "ws:";
+    if (window.location.protocol === "https:") {
+        ws_url = "wss:";
+    }
+    ws_url += "//" + window.location.host + "/data";
+    let client = new WebSocket(ws_url);
+
+    client.onopen = function () {
+        console.log("connected to data ws");
+        client.send("!");
+    };
+
+    client.onmessage = function (e) {
+        processData(e.data);
+        setTimeout(function() {client.send("!");}, 100);
+    };
+
+    client.onclose = function (e) {
+        console.warn("socket is closed. reconnect will be attempted in 1 second.", e.reason);
+        setTimeout(connect, 1000);
+    };
+
+    client.onerror = function (err) {
+        console.error("socket encountered error: ", err.message, "closing socket");
+        try {
+            client.close();
+        }
+        catch (err) {
+            console.error("error closing client", err.message);
+        }
+        $('#ptim').css('color', 'red');
+        setTimeout(connect, 3000);
+    };
 }
 
 $(document).ready(function() {
@@ -147,6 +174,7 @@ $(document).ready(function() {
 		myMap.fitBounds(startPosition.getBounds());
     }); 
 	initMap();
+	connect();
 });
 
 $(window).on( "load", function() {

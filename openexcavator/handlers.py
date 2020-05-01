@@ -7,14 +7,16 @@ Created on Aug 28, 2017
 import json
 import logging
 import subprocess
-import tornado.web
-from tornado.gen import coroutine
+
+from tornado.web import RequestHandler
+from tornado.websocket import WebSocketHandler
+
 from tornado.escape import url_escape
 
 import utils
 
 
-class BaseHandler(tornado.web.RequestHandler):
+class BaseHandler(RequestHandler):
     """
     Base handler returning 400 for both GET and POST
     other handlers will inherit this and implement the requests
@@ -49,19 +51,25 @@ class RPYHandler(BaseHandler):
         self.render("rpy.html")
 
 
-class DataHandler(BaseHandler):
+class DataHandler(WebSocketHandler):
     """
-    Handler for async /position request.
-    Get the data from the GPS and IMU threads and return JSON encoded position
+    Handler for async /data request.
+    Get the data from the data (GPS, IMU)threads and write it to the WS clients
     """
 
-    @coroutine
-    def get(self):
-        data = {}
-        if self.application.data_queue:
-            data.update(self.application.data_queue[-1])
-        response = json.dumps(data, default=utils.json_encoder)
-        self.finish(response)
+    def open(self):
+        logging.info("new ws client: %s", self)
+
+    def on_close(self):
+        logging.info("closing ws client: %s", self)
+
+    def on_message(self, message):
+        if message == "!":
+            data = {}
+            if self.application.data_queue:
+                data.update(self.application.data_queue[-1])
+            message = json.dumps(data, default=utils.json_encoder)
+            self.write_message(message, binary=False)
 
 
 class ToolsHandler(BaseHandler):

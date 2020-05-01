@@ -12,94 +12,122 @@ let safetyDepth = null;
 let path = null;
 
 
-function refreshData() {
-    let jqxhr = $.get( "/data").done(function (raw_data) {
-        let data = JSON.parse(raw_data);
+function processData(raw_data) {
+    let data = JSON.parse(raw_data);
+    try {
+        if (data.roll === undefined || data.pitch === undefined || data.yaw === undefined) {
+            $('#rpy').html("not available");
+            data.alt = data.alt - antennaHeight;
+        }
+        else {
+            var yaw = data.yaw < 0 ? data.yaw + 360 : data.yaw;
+            $('#rpy').html(data.roll.toFixed(2) + "/" + data.pitch.toFixed(2) + "/" + yaw.toFixed(2));
+            let dt = new Date();
+            if (dt.getTime()/1000 - data.imu_time > 3) {
+                $('#rpy').css("color", "red");
+            }
+            else {
+                $('#rpy').css("color", "black");
+            }
+        }
+        //{"utm_zone": {"letter": "U", "num": 12}
+        $('#plat').html(data.hasOwnProperty("lat") ? data.lat.toFixed(8) : 0);
+        $('#plng').html(data.hasOwnProperty("lng") ? data.lng.toFixed(8) : 0);
+        let fix = data.fix;
+        if (data.fix === 1) {
+            fix = 'single';
+            $('#pacc').css('color', 'red');
+        } else if (data.fix === 4){
+            $('#pacc').css('color', 'green');
+            fix = 'fix';
+        } else if (data.fix === 5){
+            $('#pacc').css('color', '#CCCC00');
+            fix = 'float';
+        }
+        $('#pacc').html(data.hasOwnProperty("acc") ? data.acc.toFixed(2) + fix : 0 + '/' + fix);
+        $('#ptim').html(new Date(data.ts * 1000).toISOString().substr(11, 8));
+        if (data.imu_time !== undefined) {
+            $('#ptim').html(new Date(data.ts * 1000).toISOString().substr(11, 8) + "/" + data.delta.toFixed(2));
+        }
+        let result = getPolylineDistance(path, data, pointById);
+        let slope = result[1] * 100;
+        $('#pslo').html(slope.toFixed(2) + '%');
+        $('#palt').html(data.hasOwnProperty("_alt") ? data._alt.toFixed(2) : "-" + '/' + data.alt.toFixed(2));
+        $('#height').html(formatDelta(result[2]));
+        $('#distance').html(formatDelta(result[0]));
+        $('#ptim').css('color', 'black');
+        if (result[2] > 0) {
+            $('.fa-arrow-circle-down').each(function () {this.style.setProperty('color' , '#5cb85c', 'important')});
+            $('.fa-arrow-circle-up').each(function () {this.style.setProperty('color' , '#868e96', 'important')});
+        }
+        else {
+            $('.fa-arrow-circle-up').each(function () {this.style.setProperty('color' , '#5cb85c', 'important')});
+            $('.fa-arrow-circle-down').each(function () {this.style.setProperty('color' , '#868e96', 'important')});
+        }
+        if (data.alt <= safetyDepth) {
+            $('.fa-arrow-circle-up').each(function () {this.style.setProperty('color' , '#d9534f', 'important')});
+        }
+        if (data.alt + antennaHeight >= safetyHeight) {
+            $('.fa-arrow-circle-down').each(function () {this.style.setProperty('color' , '#d9534f', 'important')});
+        }
+        // TODO: handle left right
+        let acc = data.hasOwnProperty("acc") ? data.acc : 25;
+        if (currentPosition === null) {
+            currentPosition = L.circle([data.lat, data.lng], acc).addTo(myMap);
+            bounds.extend(currentPosition.getBounds());
+            myMap.fitBounds(bounds);
+        }
+        else {
+            currentPosition.setLatLng(new L.LatLng(data.lat, data.lng));
+            currentPosition.setRadius(acc);
+        }
+        if (data.hasOwnProperty("acc")) {
+            currentPosition.setStyle({fillColor: "#3388ff"});
+        }
+        else {
+            currentPosition.setStyle({fillColor: "red"});
+        }
+    }
+    catch (err) {
+        $('#ptim').css('color', 'red');
+        console.log('cannot parse position data: ' + data + ', error: ' + err.message);
+    }
+}
+
+function connect() {
+    let ws_url = "ws:";
+    if (window.location.protocol === "https:") {
+        ws_url = "wss:";
+    }
+    ws_url += "//" + window.location.host + "/data";
+    let client = new WebSocket(ws_url);
+
+    client.onopen = function () {
+        console.log("connected to data ws");
+        client.send("!");
+    };
+
+    client.onmessage = function (e) {
+        processData(e.data);
+        setTimeout(function() {client.send("!");}, 100);
+    };
+
+    client.onclose = function (e) {
+        console.warn("socket is closed. reconnect will be attempted in 1 second.", e.reason);
+        setTimeout(connect, 1000);
+    };
+
+    client.onerror = function (err) {
+        console.error("socket encountered error: ", err.message, "closing socket");
         try {
-            if (data.roll === undefined || data.pitch === undefined || data.yaw === undefined) {
-                $('#rpy').html("not available");
-                data.alt = data.alt - antennaHeight;
-            }
-            else {
-                var yaw = data.yaw < 0 ? data.yaw + 360 : data.yaw;
-                $('#rpy').html(data.roll.toFixed(2) + "/" + data.pitch.toFixed(2) + "/" + yaw.toFixed(2));
-                let dt = new Date();
-                if (dt.getTime()/1000 - data.imu_time > 3) {
-                    $('#rpy').css("color", "red");
-                }
-                else {
-                    $('#rpy').css("color", "black");
-                }
-            }
-            //{"utm_zone": {"letter": "U", "num": 12}
-            $('#plat').html(data.hasOwnProperty("lat") ? data.lat.toFixed(8) : 0);
-            $('#plng').html(data.hasOwnProperty("lng") ? data.lng.toFixed(8) : 0);
-            let fix = data.fix;
-            if (data.fix === 1) {
-                fix = 'single';
-                $('#pacc').css('color', 'red');
-            } else if (data.fix === 4){
-                $('#pacc').css('color', 'green');
-                fix = 'fix';
-            } else if (data.fix === 5){
-                $('#pacc').css('color', '#CCCC00');
-                fix = 'float';
-            }
-            $('#pacc').html(data.hasOwnProperty("acc") ? data.acc.toFixed(2) + fix : 0 + '/' + fix);
-            $('#ptim').html(new Date(data.ts * 1000).toISOString().substr(11, 8));
-            if (data.imu_time !== undefined) {
-                $('#ptim').html(new Date(data.ts * 1000).toISOString().substr(11, 8) + "/" + data.delta.toFixed(2));
-            }
-            let result = getPolylineDistance(path, data, pointById);
-            let slope = result[1] * 100;
-            $('#pslo').html(slope.toFixed(2) + '%');
-            $('#palt').html(data.hasOwnProperty("_alt") ? data._alt.toFixed(2) : "-" + '/' + data.alt.toFixed(2));
-            $('#height').html(formatDelta(result[2]));
-            $('#distance').html(formatDelta(result[0]));
-            $('#ptim').css('color', 'black');
-            if (result[2] > 0) {
-                $('.fa-arrow-circle-down').each(function () {this.style.setProperty('color' , '#5cb85c', 'important')});
-                $('.fa-arrow-circle-up').each(function () {this.style.setProperty('color' , '#868e96', 'important')});
-            }
-            else {
-                $('.fa-arrow-circle-up').each(function () {this.style.setProperty('color' , '#5cb85c', 'important')});
-                $('.fa-arrow-circle-down').each(function () {this.style.setProperty('color' , '#868e96', 'important')});
-            }
-            if (data.alt <= safetyDepth) {
-                $('.fa-arrow-circle-up').each(function () {this.style.setProperty('color' , '#d9534f', 'important')});
-            }
-            if (data.alt + antennaHeight >= safetyHeight) {
-                $('.fa-arrow-circle-down').each(function () {this.style.setProperty('color' , '#d9534f', 'important')});
-            }
-            // TODO: handle left right
-            let acc = data.hasOwnProperty("acc") ? data.acc : 25;
-            if (currentPosition === null) {
-                currentPosition = L.circle([data.lat, data.lng], acc).addTo(myMap);
-                bounds.extend(currentPosition.getBounds());
-                myMap.fitBounds(bounds);
-            }
-            else {
-                currentPosition.setLatLng(new L.LatLng(data.lat, data.lng));
-                currentPosition.setRadius(acc);
-            }
-            if (data.hasOwnProperty("acc")) {
-                currentPosition.setStyle({fillColor: "#3388ff"});
-            }
-            else {
-                currentPosition.setStyle({fillColor: "red"});
-            }
+            client.close();
         }
         catch (err) {
-            $('#ptim').css('color', 'red');
-            console.log('cannot parse position data: ' + data + ', error: ' + err.message);
+            console.error("error closing client", err.message);
         }
-        setTimeout(refreshData, 100);
-    })
-        .fail(function() {
-            $('#ptim').css('color', 'red');
-            console.log('cannot retrieve data');
-            setTimeout(refreshData, 3000);
-        });
+        $('#ptim').css('color', 'red');
+        setTimeout(connect, 3000);
+    };
 }
 
 function initMap() {
@@ -138,7 +166,6 @@ function initMap() {
     }
     myMap.on('click', onMapClick);
     myMap.invalidateSize();
-    refreshData();
 }
 
 $(document).ready(function() {
@@ -149,6 +176,7 @@ $(document).ready(function() {
     safetyDepth = parseFloat($('#safety_depth').val());
     path = JSON.parse($('#path').attr('data-text'))['features'];
     initMap();
+    connect();
 });
 
 $(window).on( "load", function() {
