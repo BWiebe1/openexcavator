@@ -42,13 +42,14 @@ class HomeHandler(BaseHandler):
         self.render("home.html", config=config, error_msg=error_msg)
 
 
-class RPYHandler(BaseHandler):
+class DebugHandler(BaseHandler):
     """
-    Handler for / request, renders rpy.html
+    Handler for / request, renders debug.html
     """
 
     def get(self):
-        self.render("rpy.html")
+        config = self.application.database.get_config()
+        self.render("debug.html", config=config)
 
 
 class DataHandler(WebSocketHandler):
