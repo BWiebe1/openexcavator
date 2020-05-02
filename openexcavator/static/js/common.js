@@ -99,3 +99,39 @@ function getPolylineDistance(path, point, pointById) {
 	}
 	return [minDist, slope, altDiff];
 }
+
+function connectWS(callback) {
+    let ws_url = "ws:";
+    if (window.location.protocol === "https:") {
+        ws_url = "wss:";
+    }
+    ws_url += "//" + window.location.host + "/data";
+    let client = new WebSocket(ws_url);
+
+    client.onopen = function () {
+        console.log("connected to data ws");
+        client.send("!");
+    };
+
+    client.onmessage = function (e) {
+        callback(e.data);
+        setTimeout(function() {client.send("!");}, 100);
+    };
+
+    client.onclose = function (e) {
+        console.warn("socket is closed. reconnect will be attempted in 1 second.", e.reason);
+        setTimeout(connectWS, 1000);
+    };
+
+    client.onerror = function (err) {
+        console.error("socket encountered error: ", err.message, "closing socket");
+        try {
+            client.close();
+        }
+        catch (err) {
+            console.error("error closing client", err.message);
+        }
+        $('#ptim').css('color', 'red');
+        setTimeout(connectWS, 3000);
+    };
+}

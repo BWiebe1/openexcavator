@@ -100,44 +100,8 @@ function processData(raw_data) {
 	}
 	catch (err) {
 		$('#ptim').css('color', 'red');
-		console.log('cannot parse position data: ' + data + ', error: ' + err.message);
+		console.debug('cannot parse position data: ' + data + ', error: ' + err.message);
 	}
-}
-
-function connect() {
-    let ws_url = "ws:";
-    if (window.location.protocol === "https:") {
-        ws_url = "wss:";
-    }
-    ws_url += "//" + window.location.host + "/data";
-    let client = new WebSocket(ws_url);
-
-    client.onopen = function () {
-        console.log("connected to data ws");
-        client.send("!");
-    };
-
-    client.onmessage = function (e) {
-        processData(e.data);
-        setTimeout(function() {client.send("!");}, 100);
-    };
-
-    client.onclose = function (e) {
-        console.warn("socket is closed. reconnect will be attempted in 1 second.", e.reason);
-        setTimeout(connect, 1000);
-    };
-
-    client.onerror = function (err) {
-        console.error("socket encountered error: ", err.message, "closing socket");
-        try {
-            client.close();
-        }
-        catch (err) {
-            console.error("error closing client", err.message);
-        }
-        $('#ptim').css('color', 'red');
-        setTimeout(connect, 3000);
-    };
 }
 
 $(document).ready(function() {
@@ -174,7 +138,7 @@ $(document).ready(function() {
 		myMap.fitBounds(startPosition.getBounds());
     }); 
 	initMap();
-	connect();
+	connectWS(processData);
 });
 
 $(window).on( "load", function() {
