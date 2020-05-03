@@ -20,7 +20,7 @@ function processData(raw_data) {
             data.alt = data.alt - antennaHeight;
         }
         else {
-            var yaw = data.yaw < 0 ? data.yaw + 360 : data.yaw;
+            let yaw = data.yaw < 0 ? data.yaw + 360 : data.yaw;
             $('#rpy').html(data.roll.toFixed(2) + "/" + data.pitch.toFixed(2) + "/" + yaw.toFixed(2));
             let dt = new Date();
             if (dt.getTime()/1000 - data.imu_time > 3) {

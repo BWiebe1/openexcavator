@@ -17,7 +17,7 @@
                     return window.location.replace("/");
                 }
                 let msg = "The application is being restarted; you will be redirected automatically in " + seconds;
-                msg += seconds != 1 ? " seconds." : " second.";
+                msg += seconds !== 1 ? " seconds." : " second.";
                 rst.innerText = msg;
                 setTimeout(countdown, 1000);
             }

@@ -63,6 +63,7 @@ def populate_config():
         ("antenna_height", "10"),
         ("safety_depth", "690"),
         ("safety_height", "810"),
+        ("output_port", "3000"),
         ("path", """{
             "type": "FeatureCollection",
             "crs": { "type": "name", "properties": { "name": "urn:ogc:def:crs:OGC:1.3:CRS84" } },

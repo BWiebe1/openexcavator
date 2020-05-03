@@ -65,12 +65,13 @@ class DataHandler(WebSocketHandler):
         logging.info("closing ws client: %s", self)
 
     def on_message(self, message):
-        if message == "!":
-            data = {}
-            if self.application.data_queue:
-                data.update(self.application.data_queue[-1])
-            message = json.dumps(data, default=utils.json_encoder)
-            self.write_message(message, binary=False)
+        if message != "!":
+            return logging.warning("unexpected message %s from %s", message, self)
+        data = {}
+        if self.application.data_queue:
+            data.update(self.application.data_queue[-1])
+        message = json.dumps(data, default=utils.json_encoder)
+        self.write_message(message, binary=False)
 
 
 class ToolsHandler(BaseHandler):
@@ -98,36 +99,43 @@ class UpdateHandler(BaseHandler):
             except Exception as exc:
                 logging.warning("systemctl: %s", exc)
             return self.render("restart.html", error_message=None)
-        wifi_ssid = self.get_argument("wifi_ssid", None)
-        wifi_psk = self.get_argument("wifi_psk", None)
-        gps_host = self.get_argument("gps_host", None)
-        gps_port = self.get_argument("gps_port", None)
-        imu_host = self.get_argument("imu_host", None)
-        imu_port = self.get_argument("imu_port", None)
-        start_altitude = self.get_argument("start_altitude", None)
-        stop_altitude = self.get_argument("stop_altitude", None)
-        antenna_height = self.get_argument("antenna_height", None)
-        safety_depth = self.get_argument("safety_depth", None)
-        safety_height = self.get_argument("safety_height", None)
-        path = None
+        data = {
+            "wifi_ssid": self.get_argument("wifi_ssid", None),
+            "wifi_psk": self.get_argument("wifi_psk", None),
+            "gps_host": self.get_argument("gps_host", None),
+            "gps_port": self.get_argument("gps_port", None),
+            "imu_host": self.get_argument("imu_host", None),
+            "imu_port": self.get_argument("imu_port", None),
+            "start_altitude": self.get_argument("start_altitude", None),
+            "stop_altitude": self.get_argument("stop_altitude", None),
+            "antenna_height": self.get_argument("antenna_height", None),
+            "safety_depth": self.get_argument("safety_depth", None),
+            "safety_height": self.get_argument("safety_height", None),
+            "output_port": self.get_argument("output_port", None),
+            "path": None
+        }
         if self.request.files:
             file_info = self.request.files["path"][0]
-            path = file_info["body"]
+            data["path"] = file_info["body"]
         error_msg = None
         try:
-            gps_port = int(gps_port)
-            imu_port = int(imu_port)
-            start_altitude = float(start_altitude)
-            stop_altitude = float(stop_altitude)
-            antenna_height = float(antenna_height)
-            safety_depth = float(safety_depth)
-            safety_height = float(safety_height)
-            if path:
+            data["gps_port"] = int(data["gps_port"])
+            data["imu_port"] = int(data["imu_port"])
+            data["start_altitude"] = float(data["start_altitude"])
+            data["stop_altitude"] = float(data["stop_altitude"])
+            data["antenna_height"] = float(data["antenna_height"])
+            data["safety_depth"] = float(data["safety_depth"])
+            data["safety_height"] = float(data["safety_height"])
+            if data["output_port"]:
+                data["output_port"] = int(data["output_port"])
+                if data["output_port"] < 1024 or data["output_port"] > 65535:
+                    error_msg = "invalid output port (1024<port>65535"
+            if data["path"]:
                 try:
                     if file_info["filename"].endswith(".zip"):
-                        path = utils.extract_zip(path)
-                    pathvalue = json.loads(path.decode())
-                    if "features" not in pathvalue:
+                        data["path"] = utils.extract_zip(data["path"])
+                    path_value = json.loads(data["path"].decode())
+                    if "features" not in path_value:
                         error_msg = "missing features from GeoJSON"
                 except ValueError:
                     error_msg = "JSON data is not valid"
@@ -135,9 +143,5 @@ class UpdateHandler(BaseHandler):
             error_msg = "invalid input data: %s" % exc
         if error_msg:
             return self.redirect("/?error_msg=" + url_escape(error_msg))
-        data = {"start_altitude": start_altitude, "stop_altitude": stop_altitude, "path": path,
-                "antenna_height": antenna_height, "gps_host": gps_host, "gps_port": gps_port,
-                "imu_host": imu_host, "imu_port": imu_port, "wifi_ssid": wifi_ssid, "wifi_psk": wifi_psk,
-                "safety_height": safety_height, "safety_depth": safety_depth}
         self.application.database.set_config(data)
         return self.redirect("/")

@@ -32,7 +32,10 @@ function init3JS() {
     canvas.appendChild(renderer.domElement);
     renderer.setSize(canvas.offsetWidth, canvas.offsetHeight);
     renderer.setClearColor(0xeeeeee, 1);
-    THREE.LinearFilter
+
+    // x=x0 + distance * cos (angleZ) * sin (angleY)
+    // Y=y0 + distance * sin (Anglez)
+    // Z=z0 + distance * cos (angleZ) * cos (angleY)
 
     function draw(p1,p2){
         let mat = new THREE.MeshStandardMaterial({color:0x006600});

@@ -38,9 +38,19 @@
             GPS Altitude:&nbsp;<span id="_alt" class="text-center">0</span>
         </div>
     </div>
-    <div class="row fill d-flex justify-content-start">
+    <div class="row fill d-flex justify-content-start" style="position: relative">
         <div class="col border border-primary"  style="padding: 0">
             <div id="canvas" style="width: 100%; height: 100%; padding: 0; margin: 0;"></div>
+        </div>
+        <div style="position: absolute; top: 8px; right: 8px;">
+            <div class="custom-control custom-checkbox">
+                <input type="checkbox" class="custom-control-input" id="localGPS">
+                <label class="custom-control-label" for="localGPS">Local GPS</label>
+            </div>
+            <div class="custom-control custom-checkbox">
+                <input type="checkbox" class="custom-control-input" id="localIMU" style="margin-left: 0;">
+                <label class="custom-control-label" for="localIMU">Local IMU</label>
+            </div>
         </div>
     </div>
 {% end %}
