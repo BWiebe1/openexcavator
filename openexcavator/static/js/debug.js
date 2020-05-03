@@ -1,19 +1,38 @@
 let utmZone = {"num": undefined, "letter": undefined}; //make sure we use the same UTM zone for all data
 let dist = 2.085;
+let roll = null;
+let pitch = null;
+let yaw = null;
+
+function lockScreen() {
+    let promise = null;
+    promise = screen.orientation.lock(screen.orientation.type);
+    promise
+        .then(function () {
+            console.error('screen lock acquired');
+        })
+        .catch(function (err) {
+            console.error('cannot acquire orientation lock: ' + err);
+        });
+}
 
 function handleOrientation(event) {
-    let yaw = 360 - event.alpha;
-    let pitch = event.beta;
-    let roll = event.gamma;
-    $("#roll").val(roll.toFixed(2));
-    $("#pitch").val(pitch.toFixed(2));
-    $("#yaw").val(yaw.toFixed(2));
-    let x = parseFloat($("#x").val());
-    let y = parseFloat($("#y").val());
-    let z = parseFloat($("#z").val());
-    let dist = parseFloat($("#d").val());
-    let position = rodloc([x, y, z], dist, pitch, roll, -yaw);
-    $("#position").html("X " + position[0].toFixed(2) + ", Y " + position[1].toFixed(2) + ", Z " + position[2].toFixed(2));
+    if (event.alpha === null ||  event.beta === null || event.gamma === null) {
+        return alert("no orientation support");
+    }
+    let localIMU = document.getElementById("localIMU");
+    yaw = 360 - event.alpha;
+    pitch = event.beta;
+    roll = event.gamma;
+    $("#roll").html(roll.toFixed(2));
+    $("#pitch").html(pitch.toFixed(2));
+    $("#yaw").html(yaw.toFixed(2));
+    // let x = parseFloat($("#x").val());
+    // let y = parseFloat($("#y").val());
+    // let z = parseFloat($("#z").val());
+    // let dist = parseFloat($("#d").val());
+    //let position = rodloc([x, y, z], dist, pitch, roll, -yaw);
+     //$("#position").html("X " + position[0].toFixed(2) + ", Y " + position[1].toFixed(2) + ", Z " + position[2].toFixed(2));
 }
 
 function init3JS() {
@@ -22,13 +41,13 @@ function init3JS() {
     let camera = new THREE.PerspectiveCamera(75, canvas.offsetWidth/canvas.offsetHeight, 0.1, 1000);
 
     let light = new THREE.PointLight(0xEEEEEE);
-    light.position.set(20, 0, 20);
+    light.position.set(10, 0, 10);
     scene.add(light);
     let lightAmb = new THREE.AmbientLight(0x777777);
     scene.add(lightAmb);
 
-    let renderer = new THREE.WebGLRenderer({antialias: true, alpha: true});
-    renderer.setPixelRatio( window.devicePixelRatio );
+    renderer = new THREE.WebGLRenderer({antialias: true, alpha: true});
+    renderer.setPixelRatio(window.devicePixelRatio);
     canvas.appendChild(renderer.domElement);
     renderer.setSize(canvas.offsetWidth, canvas.offsetHeight);
     renderer.setClearColor(0xeeeeee, 1);
@@ -37,37 +56,50 @@ function init3JS() {
     // Y=y0 + distance * sin (Anglez)
     // Z=z0 + distance * cos (angleZ) * cos (angleY)
 
-    function draw(p1,p2){
-        let mat = new THREE.MeshStandardMaterial({color:0x006600});
-        let geo = new THREE.Geometry();
-        geo.vertices.push(p1);
-        geo.vertices.push(p2);
-        let line = new THREE.Line(geo, mat);
-        scene.add(line);
-       return line
-    }
-
-    let geometry = new THREE.BoxGeometry(1, 1, 1);
     let material = new THREE.MeshStandardMaterial({color: 0x006600});
+    let geometry = new THREE.Geometry();
+    geometry.vertices.push(new THREE.Vector3(0, 0, 0));
+    geometry.vertices.push(new THREE.Vector3(0, 0, -5));
+    let line = new THREE.Line(geometry, material);
+    scene.add(line);
+
+    geometry = new THREE.BoxGeometry(1, 1, 1);
     let cube = new THREE.Mesh(geometry, material);
     scene.add(cube);
 
-    let line = draw(new THREE.Vector3(0,0,0), new THREE.Vector3(5, 0, 0))
-    camera.position.z = 8;
+    // let plane = new THREE.GridHelper(10, 10);
+    // scene.add(plane);
+    let axesHelper = new THREE.AxisHelper(3);
+    scene.add(axesHelper);
+
+    camera.position.set(7, 7, 7);
+    camera.lookAt(new THREE.Vector3(0,0,0));
 
     let animate = function () {
-        requestAnimationFrame( animate );
-        line.rotation.x += 0.01;
-        line.rotation.y += 0.01;
-        cube.rotation.x += 0.01;
-	    cube.rotation.y += 0.01;
+        requestAnimationFrame(animate);
+        line.rotation.x = toRadians(roll);
+        line.rotation.y = toRadians(pitch);
+        line.rotation.z = toRadians(yaw);
+        cube.rotation.x = toRadians(roll);
+        cube.rotation.y = toRadians(pitch);
+        cube.rotation.z = toRadians(yaw);
         renderer.render(scene, camera);
     };
 
     animate();
+
 }
-//window.addEventListener('deviceorientation', handleOrientation);
 
 $(document).ready(function() {
     init3JS();
+    $("#localIMU").on("change", function () {
+        toggleFullScreen();
+        if (this.checked === true) {
+            lockScreen();
+            window.addEventListener("deviceorientation", handleOrientation);
+        }
+        else {
+            window.removeEventListener("deviceorientation", handleOrientation);
+        }
+    });
 });
